@@ -1,0 +1,59 @@
+﻿{% extends "app/base_app.html" %}
+{% block title %}
+{% if object %}
+  {% if active_language == 'ar' %}تعديل صنف{% else %}Edit Product{% endif %}
+{% else %}
+  {% if active_language == 'ar' %}إضافة صنف{% else %}Add Product{% endif %}
+{% endif %}
+{% endblock %}
+
+{% block app_title %}
+{% if object %}
+  {% if active_language == 'ar' %}تعديل صنف المنيو{% else %}Edit Menu Product{% endif %}
+{% else %}
+  {% if active_language == 'ar' %}إضافة صنف للمنيو{% else %}Create Menu Product{% endif %}
+{% endif %}
+{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}إعداد الكود والسعر والضريبة وصورة الصنف{% else %}Configure SKU, pricing, taxes, and product image{% endif %}{% endblock %}
+
+{% block content %}
+<div class="panel p-4">
+  <form method="post" class="row g-3" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="col-md-4"><label class="form-label" for="{{ form.branch.id_for_label }}">{{ form.branch.label }}</label>{{ form.branch }}</div>
+    <div class="col-md-4"><label class="form-label" for="{{ form.category.id_for_label }}">{{ form.category.label }}</label>{{ form.category }}</div>
+    <div class="col-md-4"><label class="form-label" for="{{ form.sku.id_for_label }}">{{ form.sku.label }}</label>{{ form.sku }}</div>
+    <div class="col-md-6"><label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>{{ form.name }}</div>
+    <div class="col-md-3"><label class="form-label" for="{{ form.price.id_for_label }}">{{ form.price.label }}</label>{{ form.price }}</div>
+    <div class="col-md-3"><label class="form-label" for="{{ form.tax_rate.id_for_label }}">{{ form.tax_rate.label }}</label>{{ form.tax_rate }}</div>
+    <div class="col-md-6 d-flex align-items-end"><div class="form-check">{{ form.is_tax_inclusive }}<label class="form-check-label" for="{{ form.is_tax_inclusive.id_for_label }}">{{ form.is_tax_inclusive.label }}</label></div></div>
+    <div class="col-md-6 d-flex align-items-end"><div class="form-check">{{ form.is_active }}<label class="form-check-label" for="{{ form.is_active.id_for_label }}">{{ form.is_active.label }}</label></div></div>
+    <div class="col-md-6">
+      <label class="form-label" for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
+      {{ form.image }}
+      {% if object and object.image %}
+      <div class="mt-2">
+        <img src="{{ object.image.url }}" alt="{{ object.name }}" style="height:72px;width:72px;object-fit:cover;border-radius:10px;">
+      </div>
+      {% endif %}
+    </div>
+    <div class="col-md-6 d-flex align-items-center">
+      <div class="form-check">
+        {{ form.apply_to_all_branches }}
+        <label class="form-check-label" for="{{ form.apply_to_all_branches.id_for_label }}">
+          {% if active_language == 'ar' %}إضافة الصنف لكل فروع المطعم{% else %}Apply this product to all branches{% endif %}
+        </label>
+      </div>
+    </div>
+
+    <div class="col-12 d-flex gap-2 flex-wrap">
+      <button class="btn btn-primary" type="submit">{% if active_language == 'ar' %}حفظ{% else %}Save{% endif %}</button>
+      {% if object %}
+      <a class="btn btn-outline-secondary" href="{% url 'menu:product-recipes' object.id %}">{% if active_language == 'ar' %}إدارة المكونات{% else %}Manage Ingredients{% endif %}</a>
+      {% endif %}
+      <a class="btn btn-outline-secondary" href="{% url 'menu:products' %}">{% if active_language == 'ar' %}إلغاء{% else %}Cancel{% endif %}</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

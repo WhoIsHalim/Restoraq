@@ -1,0 +1,218 @@
+﻿{% extends "app/base_app.html" %}
+{% block title %}{% if active_language == 'ar' %}التقارير{% else %}Reports{% endif %}{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}لوحة التقارير المتقدمة{% else %}Advanced Reports{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}تحليل يومي وأسبوعي وشهري وربع سنوي وسنوي مع المبيعات والمصروفات{% else %}Daily/weekly/monthly/quarterly/yearly analytics with sales and expenses{% endif %}{% endblock %}
+
+{% block content %}
+<div class="panel p-3 mb-3">
+  <form method="get" class="row g-2 align-items-end">
+    <div class="col-md-4 col-lg-3">
+      <label class="form-label">{% if active_language == 'ar' %}الفترة{% else %}Period{% endif %}</label>
+      <select class="form-select" name="period" onchange="this.form.submit()">
+        {% for key,label in period_choices %}
+        <option value="{{ key }}" {% if period == key %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4 col-lg-3">
+      <label class="form-label">{% if active_language == 'ar' %}الفرع{% else %}Branch{% endif %}</label>
+      <select class="form-select" name="branch_id" onchange="this.form.submit()">
+        <option value="">{% if active_language == 'ar' %}كل الفروع{% else %}All Branches{% endif %}</option>
+        {% for b in branch_options %}
+        <option value="{{ b.id }}" {% if selected_branch_id == b.id|stringformat:"s" %}selected{% endif %}>{{ b.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-8 col-lg-9 text-muted small">
+      {% if active_language == 'ar' %}
+      من {{ start_day }} إلى {{ end_day }}
+      {% else %}
+      From {{ start_day }} to {{ end_day }}
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-6 col-xl-3"><div class="dash-card h-100"><h6 class="text-muted">{% if active_language == 'ar' %}إجمالي المبيعات{% else %}Total Sales{% endif %}</h6><h3>{{ sales }}</h3></div></div>
+  <div class="col-md-6 col-xl-3"><div class="dash-card h-100"><h6 class="text-muted">{% if active_language == 'ar' %}إجمالي المصروفات{% else %}Total Expenses{% endif %}</h6><h3>{{ expenses }}</h3></div></div>
+  <div class="col-md-6 col-xl-3"><div class="dash-card h-100"><h6 class="text-muted">{% if active_language == 'ar' %}صافي الربح{% else %}Net Profit{% endif %}</h6><h3>{{ net_profit }}</h3></div></div>
+  <div class="col-md-6 col-xl-3"><div class="dash-card h-100"><h6 class="text-muted">{% if active_language == 'ar' %}أفضل صنف{% else %}Best Seller{% endif %}</h6><h5>{% if best %}{{ best.0 }}{% else %}-{% endif %}</h5></div></div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-lg-6">
+    <div class="panel p-3 h-100">
+      <h5 class="mb-3">{% if active_language == 'ar' %}اتجاه المبيعات مقابل المصروفات{% else %}Sales vs Expenses Trend{% endif %}</h5>
+      <div style="height: 280px;"><canvas id="trendChart"></canvas></div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="panel p-3 h-100">
+      <h5 class="mb-3">{% if active_language == 'ar' %}صافي الربح عبر الفترة{% else %}Net Profit Over Time{% endif %}</h5>
+      <div style="height: 280px;"><canvas id="netChart"></canvas></div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="panel p-3 h-100">
+      <h5 class="mb-3">{% if active_language == 'ar' %}توزيع حالات الطلبات{% else %}Order Status Distribution{% endif %}</h5>
+      <div style="height: 280px;"><canvas id="statusChart"></canvas></div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="panel p-3 h-100">
+      <h5 class="mb-3">{% if active_language == 'ar' %}أفضل الأصناف مبيعاً{% else %}Top Selling Products{% endif %}</h5>
+      <div style="height: 280px;"><canvas id="topProductsChart"></canvas></div>
+    </div>
+  </div>
+  <div class="col-12">
+    <div class="panel p-3">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+          <h5 class="mb-1">{% if active_language == 'ar' %}أقل صنف مبيعاً{% else %}Least Seller{% endif %}</h5>
+          <p class="text-muted mb-0">{% if active_language == 'ar' %}الكمية المباعة{% else %}Sold Quantity{% endif %}: {% if least %}{{ least.1 }}{% else %}0{% endif %}</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <p class="display-6 mb-0">{% if least %}{{ least.0 }}{% else %}-{% endif %}</p>
+          <a class="btn btn-outline-primary btn-sm" href="{% url 'reports:accounting' %}?period={{ period }}&branch_id={{ selected_branch_id }}">{% if active_language == 'ar' %}فتح لوحة الحسابات{% else %}Open Accounting{% endif %}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel p-3">
+  <h5 class="mb-3">{% if active_language == 'ar' %}تفاصيل حسب الفروع{% else %}Branch Breakdown{% endif %}</h5>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>{% if active_language == 'ar' %}الفرع{% else %}Branch{% endif %}</th>
+          <th>{% if active_language == 'ar' %}المبيعات{% else %}Sales{% endif %}</th>
+          <th>{% if active_language == 'ar' %}المصروفات{% else %}Expenses{% endif %}</th>
+          <th>{% if active_language == 'ar' %}صافي الربح{% else %}Net{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for row in branch_breakdown %}
+        <tr>
+          <td>{{ row.branch.name }}</td>
+          <td>{{ row.sales }}</td>
+          <td>{{ row.expenses }}</td>
+          <td>{{ row.net_profit }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4" class="text-center text-muted py-4">{% if active_language == 'ar' %}لا توجد بيانات فروع{% else %}No branch data{% endif %}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  fetch("{% url 'reports:analytics' %}?period={{ period }}&branch_id={{ selected_branch_id }}")
+    .then((r) => r.json())
+    .then((data) => {
+      const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: "bottom" },
+        },
+      };
+
+      const trendCtx = document.getElementById("trendChart");
+      new Chart(trendCtx, {
+        type: "bar",
+        data: {
+          labels: data.trend.labels,
+          datasets: [
+            {
+              type: "line",
+              label: "{% if active_language == 'ar' %}المبيعات{% else %}Sales{% endif %}",
+              data: data.trend.sales,
+              borderColor: "#1e4db7",
+              backgroundColor: "rgba(30, 77, 183, 0.18)",
+              fill: true,
+              tension: 0.32,
+            },
+            {
+              type: "bar",
+              label: "{% if active_language == 'ar' %}المصروفات{% else %}Expenses{% endif %}",
+              data: data.trend.expenses,
+              backgroundColor: "rgba(220, 78, 78, 0.45)",
+            },
+          ],
+        },
+        options: {
+          ...commonOptions,
+          scales: { y: { beginAtZero: true } },
+        },
+      });
+
+      const netCtx = document.getElementById("netChart");
+      const netValues = data.trend.sales.map((v, idx) => Number(v || 0) - Number((data.trend.expenses || [])[idx] || 0));
+      new Chart(netCtx, {
+        type: "line",
+        data: {
+          labels: data.trend.labels,
+          datasets: [
+            {
+              label: "{% if active_language == 'ar' %}صافي الربح{% else %}Net Profit{% endif %}",
+              data: netValues,
+              borderColor: "#2ea87f",
+              backgroundColor: "rgba(46, 168, 127, 0.15)",
+              fill: true,
+              tension: 0.28,
+            },
+          ],
+        },
+        options: {
+          ...commonOptions,
+          scales: { y: { beginAtZero: true } },
+        },
+      });
+
+      const statusCtx = document.getElementById("statusChart");
+      new Chart(statusCtx, {
+        type: "doughnut",
+        data: {
+          labels: [
+            "{% if active_language == 'ar' %}مسودة{% else %}Draft{% endif %}",
+            "{% if active_language == 'ar' %}مؤكد{% else %}Confirmed{% endif %}",
+            "{% if active_language == 'ar' %}ملغي{% else %}Cancelled{% endif %}",
+          ],
+          datasets: [
+            {
+              data: [data.status.draft, data.status.confirmed, data.status.cancelled],
+              backgroundColor: ["#9aa9c5", "#2ea87f", "#dc4e4e"],
+            },
+          ],
+        },
+        options: commonOptions,
+      });
+
+      const topCtx = document.getElementById("topProductsChart");
+      new Chart(topCtx, {
+        type: "bar",
+        data: {
+          labels: data.top_products.labels,
+          datasets: [
+            {
+              label: "{% if active_language == 'ar' %}الكمية المباعة{% else %}Sold Quantity{% endif %}",
+              data: data.top_products.values,
+              backgroundColor: "#355fcf",
+            },
+          ],
+        },
+        options: {
+          ...commonOptions,
+          indexAxis: "y",
+          scales: { x: { beginAtZero: true } },
+        },
+      });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}{% if active_language == 'ar' %}الأسئلة الشائعة{% else %}FAQ{% endif %}{% endblock %}
+
+{% block content %}
+<section class="panel p-4 mb-4">
+  <h1 class="hero-slide-title">{% if active_language == 'ar' %}أسئلة شائعة{% else %}Frequently Asked Questions{% endif %}</h1>
+  <p class="hero-slide-subtitle">
+    {% if active_language == 'ar' %}
+    إجابات واضحة حول التشغيل، الباقات، والدعم.
+    {% else %}
+    Clear answers about operations, pricing, and support.
+    {% endif %}
+  </p>
+</section>
+
+<section class="mb-4">
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="soft-card h-100">
+        <h6 class="fw-bold">{% if active_language == 'ar' %}هل يعمل النظام بدون إنترنت؟{% else %}Does it work offline?{% endif %}</h6>
+        <p class="mb-0 text-muted">{% if active_language == 'ar' %}نعم، الكاشير يعمل بدون إنترنت ويتم المزامنة لاحقاً.{% else %}Yes, POS works offline with sync later.{% endif %}</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="soft-card h-100">
+        <h6 class="fw-bold">{% if active_language == 'ar' %}هل يمكن إدارة عدة فروع؟{% else %}Can I manage multiple branches?{% endif %}</h6>
+        <p class="mb-0 text-muted">{% if active_language == 'ar' %}متاح في الباقات العليا مع مقارنة الأداء.{% else %}Available in higher plans with branch comparison.{% endif %}</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="soft-card h-100">
+        <h6 class="fw-bold">{% if active_language == 'ar' %}كيف يتم احتساب الباقات؟{% else %}How are plans billed?{% endif %}</h6>
+        <p class="mb-0 text-muted">{% if active_language == 'ar' %}باقات شهرية واضحة بدون رسوم مخفية.{% else %}Clear monthly plans with no hidden fees.{% endif %}</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="soft-card h-100">
+        <h6 class="fw-bold">{% if active_language == 'ar' %}هل يوجد دعم فني؟{% else %}Do you offer support?{% endif %}</h6>
+        <p class="mb-0 text-muted">{% if active_language == 'ar' %}نعم، عبر تذاكر ودعم مباشر حسب الاتفاق.{% else %}Yes, via tickets and direct support as agreed.{% endif %}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-panel">
+  <h3>{% if active_language == 'ar' %}هل لديك سؤال آخر؟{% else %}Still have a question?{% endif %}</h3>
+  <p class="mb-3">{% if active_language == 'ar' %}تواصل معنا وسنرد بسرعة.{% else %}Reach out and we will respond quickly.{% endif %}</p>
+  <a href="{% url 'core:contact' %}" class="btn btn-light btn-lg">{% if active_language == 'ar' %}تواصل معنا{% else %}Contact Us{% endif %}</a>
+</section>
+{% endblock %}

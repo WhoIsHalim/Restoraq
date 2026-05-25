@@ -1,0 +1,71 @@
+{% extends "app/base_app.html" %}
+{% block title %}{% if active_language == 'ar' %}الحجوزات{% else %}Reservations{% endif %}{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}سجل الحجوزات{% else %}Reservations Log{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}متابعة حجوزات الطاولات والطلبات المسبقة{% else %}Track reservations and seating schedule{% endif %}{% endblock %}
+
+{% block content %}
+<div class="panel p-3 mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+  <h5 class="mb-0">{% if active_language == 'ar' %}قائمة الحجوزات{% else %}Reservations List{% endif %}</h5>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'restaurants:tables' %}">{% if active_language == 'ar' %}الطاولات{% else %}Tables{% endif %}</a>
+    {% if can_write %}
+    <a class="btn btn-primary" href="{% url 'restaurants:reservation-create' %}">{% if active_language == 'ar' %}إضافة حجز{% else %}Add Reservation{% endif %}</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="panel p-3">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>{% if active_language == 'ar' %}العميل{% else %}Customer{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الهاتف{% else %}Phone{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الوقت{% else %}Time{% endif %}</th>
+          <th>{% if active_language == 'ar' %}عدد الأفراد{% else %}Party{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الطاولة{% else %}Table{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+          {% if can_write %}
+          <th>{% if active_language == 'ar' %}إجراءات{% else %}Actions{% endif %}</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in reservations %}
+        <tr>
+          <td class="fw-semibold">{{ row.customer_name }}</td>
+          <td>{{ row.customer_phone|default:"-" }}</td>
+          <td>{{ row.reservation_time|date:"Y-m-d H:i" }}</td>
+          <td>{{ row.party_size }}</td>
+          <td>{{ row.table|default:"-" }}</td>
+          <td>
+            {% if row.status == 'confirmed' %}
+              <span class="status-pill status-green">{% if active_language == 'ar' %}مؤكد{% else %}Confirmed{% endif %}</span>
+            {% elif row.status == 'cancelled' %}
+              <span class="status-pill status-gray">{% if active_language == 'ar' %}ملغي{% else %}Cancelled{% endif %}</span>
+            {% elif row.status == 'completed' %}
+              <span class="status-pill status-amber">{% if active_language == 'ar' %}مكتمل{% else %}Completed{% endif %}</span>
+            {% else %}
+              <span class="status-pill status-gray">{% if active_language == 'ar' %}معلق{% else %}Pending{% endif %}</span>
+            {% endif %}
+          </td>
+          {% if can_write %}
+          <td>
+            <a class="btn btn-sm btn-outline-primary" href="{% url 'restaurants:reservation-edit' row.id %}">
+              {% if active_language == 'ar' %}تعديل{% else %}Edit{% endif %}
+            </a>
+          </td>
+          {% endif %}
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="{% if can_write %}7{% else %}6{% endif %}" class="text-center text-muted py-4">
+            {% if active_language == 'ar' %}لا توجد حجوزات{% else %}No reservations{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

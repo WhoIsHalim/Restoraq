@@ -1,0 +1,46 @@
+﻿{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}
+  {% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} |
+  {% if LANGUAGE_CODE|slice:":2" == "ar" %}لوحة إدارة Restoraq{% else %}Restoraq Admin{% endif %}
+{% endblock %}
+{% block bodyclass %}{{ block.super }} restoraq-admin{% endblock %}
+
+{% block branding %}
+<div id="site-name">
+  <a href="{% url 'admin:index' %}">
+    {% if LANGUAGE_CODE|slice:":2" == "ar" %}
+    لوحة إدارة Restoraq
+    {% else %}
+    {% if LANGUAGE_CODE|slice:":2" == "ar" %}
+    لوحة إدارة Restoraq
+    {% else %}
+    Restoraq Administration
+    {% endif %}
+    {% endif %}
+  </a>
+</div>
+{% endblock %}
+
+{% block userlinks %}
+  <a class="btn btn-sm btn-outline-secondary" href="{% url 'system:dashboard' %}">
+    {% if LANGUAGE_CODE|slice:":2" == "ar" %}لوحة السيستم{% else %}System Dashboard{% endif %}
+  </a>
+  <a class="btn btn-sm btn-outline-primary" href="{% url 'core:home' %}">
+    {% if LANGUAGE_CODE|slice:":2" == "ar" %}الموقع التسويقي{% else %}Marketing Site{% endif %}
+  </a>
+  {% if user.has_usable_password %}
+  <a class="btn btn-sm btn-outline-dark" href="{% url 'admin:password_change' %}">
+    {% if LANGUAGE_CODE|slice:":2" == "ar" %}تغيير كلمة المرور{% else %}Change Password{% endif %}
+  </a>
+  {% endif %}
+  <div class="lang-switch d-flex">
+    <a class="btn btn-sm {% if LANGUAGE_CODE|slice:':2' == 'ar' %}btn-warning{% else %}btn-outline-warning{% endif %}" href="{% url 'accounts:switch-language' 'ar' %}">AR</a>
+    <a class="btn btn-sm {% if LANGUAGE_CODE|slice:':2' == 'en' %}btn-info{% else %}btn-outline-info{% endif %}" href="{% url 'accounts:switch-language' 'en' %}">EN</a>
+  </div>
+  <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-sm btn-light">{% if LANGUAGE_CODE|slice:":2" == "ar" %}تسجيل خروج{% else %}Log out{% endif %}</button>
+  </form>
+{% endblock %}

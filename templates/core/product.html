@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if active_language == 'ar' %}المنتج{% else %}Product{% endif %}{% endblock %}
+
+{% block content %}
+<section class="panel p-4 mb-4">
+  <div class="row align-items-center g-4">
+    <div class="col-lg-7">
+      <span class="hero-slide-kicker">{% if active_language == 'ar' %}منصة واحدة{% else %}One Platform{% endif %}</span>
+      <h1 class="hero-slide-title mt-2">{% if active_language == 'ar' %}كل أدوات تشغيل مطعمك في مكان واحد{% else %}Everything you need to run your restaurant{% endif %}</h1>
+      <p class="hero-slide-subtitle">
+        {% if active_language == 'ar' %}
+        كاشير سريع، شاشة مطبخ، مخزون، تقارير، وصلاحيات فريق عمل بدون تعقيد.
+        {% else %}
+        POS, kitchen display, inventory, reporting, and team access in one streamlined system.
+        {% endif %}
+      </p>
+      <div class="d-flex gap-2 mt-3 flex-wrap">
+        <a class="btn btn-primary" href="{% url 'core:request-demo' %}">{% if active_language == 'ar' %}اطلب ديمو{% else %}Request Demo{% endif %}</a>
+        <a class="btn btn-outline-primary" href="{% url 'core:pricing' %}">{% if active_language == 'ar' %}عرض الباقات{% else %}View Pricing{% endif %}</a>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="hero-slide-media">
+        <img src="{% static 'img/undraw_posting_photo.svg' %}" alt="product">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mb-4">
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="feature-card h-100">
+        <div class="feature-icon">01</div>
+        <h5>{% if active_language == 'ar' %}الكاشير{% else %}Cashier{% endif %}</h5>
+        <p class="mb-0">{% if active_language == 'ar' %}واجهة لمس سريعة مع أوفلاين ومزامنة تلقائية.{% else %}Fast touch-ready POS with offline sync.{% endif %}</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card h-100">
+        <div class="feature-icon">02</div>
+        <h5>{% if active_language == 'ar' %}شاشة المطبخ{% else %}Kitchen Display{% endif %}</h5>
+        <p class="mb-0">{% if active_language == 'ar' %}متابعة الطلبات حسب المرحلة وتقليل التأخير.{% else %}Track tickets by stage and reduce delays.{% endif %}</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card h-100">
+        <div class="feature-icon">03</div>
+        <h5>{% if active_language == 'ar' %}المخزون{% else %}Inventory{% endif %}</h5>
+        <p class="mb-0">{% if active_language == 'ar' %}خصم تلقائي للمكونات وتنبيهات انخفاض المخزون.{% else %}Auto recipe deductions and low stock alerts.{% endif %}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="panel p-4">
+  <div class="row g-4 align-items-center">
+    <div class="col-lg-6">
+      <h3 class="mb-2">{% if active_language == 'ar' %}لوحة تقارير موحدة{% else %}Unified Reporting{% endif %}</h3>
+      <p class="text-muted mb-0">{% if active_language == 'ar' %}راقب الأداء على مستوى الفرع أو المطعم بالكامل.{% else %}Monitor branch and restaurant performance in one dashboard.{% endif %}</p>
+    </div>
+    <div class="col-lg-6">
+      <div class="soft-card">
+        <ul class="feature-points">
+          <li><i class="fa-solid fa-circle-check text-success me-2"></i>{% if active_language == 'ar' %}مقارنة الفروع{% else %}Branch comparison{% endif %}</li>
+          <li><i class="fa-solid fa-circle-check text-success me-2"></i>{% if active_language == 'ar' %}تحليل المبيعات والهوامش{% else %}Sales and margin insights{% endif %}</li>
+          <li><i class="fa-solid fa-circle-check text-success me-2"></i>{% if active_language == 'ar' %}تقارير يومية وأسبوعية{% else %}Daily and weekly reports{% endif %}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

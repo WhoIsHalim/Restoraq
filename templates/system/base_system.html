@@ -1,0 +1,81 @@
+﻿{% extends "app/base_app.html" %}
+{% load static %}
+
+{% block body_class %}system-page{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}إدارة المنصة{% else %}Platform Administration{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}إدارة المطاعم والاشتراكات والمحتوى{% else %}Control tenants, subscriptions, and marketing content{% endif %}{% endblock %}
+
+{% block content %}
+<div class="system-layout">
+  <aside class="system-sidebar">
+    <div class="system-brand">
+      <div class="system-brand-title">Restoraq</div>
+      <small>{% if active_language == 'ar' %}لوحة مدير النظام{% else %}System Console{% endif %}</small>
+    </div>
+    <nav class="system-nav">
+      <div class="system-nav-heading">{% if active_language == 'ar' %}المنصة{% else %}Platform{% endif %}</div>
+      <a class="system-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'system:dashboard' %}">
+        <i class="fa-solid fa-gauge-high"></i>
+        <span>{% if active_language == 'ar' %}نظرة عامة{% else %}Overview{% endif %}</span>
+      </a>
+      <a class="system-nav-link {% if request.resolver_match.url_name == 'tenants' %}active{% endif %}" href="{% url 'system:tenants' %}">
+        <i class="fa-solid fa-store"></i>
+        <span>{% if active_language == 'ar' %}المطاعم{% else %}Tenants{% endif %}</span>
+      </a>
+      <a class="system-nav-link {% if request.resolver_match.url_name == 'tenant-create' %}active{% endif %}" href="{% url 'system:tenant-create' %}">
+        <i class="fa-solid fa-circle-plus"></i>
+        <span>{% if active_language == 'ar' %}إضافة مطعم{% else %}Add Restaurant{% endif %}</span>
+      </a>
+      <a class="system-nav-link {% if request.resolver_match.url_name == 'support-tickets' %}active{% endif %}" href="{% url 'system:support-tickets' %}">
+        <i class="fa-solid fa-headset"></i>
+        <span>{% if active_language == 'ar' %}الدعم والتذاكر{% else %}Support Tickets{% endif %}</span>
+      </a>
+
+      <div class="system-nav-heading mt-3">{% if active_language == 'ar' %}الاشتراكات{% else %}Billing{% endif %}</div>
+      <a class="system-nav-link {% if request.resolver_match.url_name == 'subscriptions' %}active{% endif %}" href="{% url 'system:subscriptions' %}">
+        <i class="fa-solid fa-file-contract"></i>
+        <span>{% if active_language == 'ar' %}الاشتراكات{% else %}Subscriptions{% endif %}</span>
+      </a>
+      <a class="system-nav-link {% if request.resolver_match.url_name == 'plans' %}active{% endif %}" href="{% url 'system:plans' %}">
+        <i class="fa-solid fa-layer-group"></i>
+        <span>{% if active_language == 'ar' %}الباقات{% else %}Plans{% endif %}</span>
+      </a>
+
+      <div class="system-nav-heading mt-3">{% if active_language == 'ar' %}المحتوى{% else %}Content{% endif %}</div>
+      <a class="system-nav-link {% if request.resolver_match.url_name == 'site-content' %}active{% endif %}" href="{% url 'system:site-content' %}">
+        <i class="fa-solid fa-pen-to-square"></i>
+        <span>{% if active_language == 'ar' %}محتوى الموقع{% else %}Website Content{% endif %}</span>
+      </a>
+
+      <div class="system-nav-heading mt-3">{% if active_language == 'ar' %}المراقبة{% else %}Monitoring{% endif %}</div>
+      <a class="system-nav-link {% if request.resolver_match.url_name == 'audit-logs' %}active{% endif %}" href="{% url 'system:audit-logs' %}">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>{% if active_language == 'ar' %}سجل التدقيق{% else %}Audit Log{% endif %}</span>
+      </a>
+      <a class="system-nav-link" href="{% url 'admin:backup_backuprecord_changelist' %}">
+        <i class="fa-solid fa-database"></i>
+        <span>{% if active_language == 'ar' %}النسخ الاحتياطي{% else %}Backups{% endif %}</span>
+      </a>
+    </nav>
+    <div class="system-side-footer">
+      <img src="{% static 'img/undraw_rocket.svg' %}" alt="rocket">
+      <p>{% if active_language == 'ar' %}إدارة موحدة للمطاعم والفوترة والمحتوى والعمليات.{% else %}One place for tenants, billing, content, and operations.{% endif %}</p>
+    </div>
+  </aside>
+
+  <section class="system-main">
+    <header class="system-topbar">
+      <div>
+        <h2 class="mb-1">{% block system_title %}{% endblock %}</h2>
+        <p class="mb-0 text-muted">{% block system_subtitle %}{% endblock %}</p>
+      </div>
+      <div class="d-flex gap-2 flex-wrap">
+        <a class="btn btn-outline-secondary" href="{% url 'admin:index' %}">{% if active_language == 'ar' %}لوحة الإدارة{% else %}Admin Panel{% endif %}</a>
+        <a class="btn btn-outline-primary" href="{% url 'core:home' %}">{% if active_language == 'ar' %}الموقع التسويقي{% else %}Marketing Site{% endif %}</a>
+        {% block system_top_actions %}{% endblock %}
+      </div>
+    </header>
+    <div class="system-content">{% block system_content %}{% endblock %}</div>
+  </section>
+</div>
+{% endblock %}

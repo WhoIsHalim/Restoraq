@@ -1,0 +1,112 @@
+{% extends "system/base_system.html" %}
+
+{% block title %}{% if active_language == 'ar' %}إضافة مطعم{% else %}Add Restaurant{% endif %}{% endblock %}
+{% block system_title %}{% if active_language == 'ar' %}إضافة مطعم جديد{% else %}Create New Restaurant Tenant{% endif %}{% endblock %}
+{% block system_subtitle %}
+{% if active_language == 'ar' %}
+سيتم إنشاء المطعم والفرع الرئيسي وحساب المالك والاشتراك في خطوة واحدة.
+{% else %}
+Tenant, main branch, owner account, and subscription are created in one flow.
+{% endif %}
+{% endblock %}
+
+{% block system_content %}
+<div class="panel p-4">
+  <form method="post" class="row g-3">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="col-12"><h5 class="mb-1">{% if active_language == 'ar' %}بيانات المطعم{% else %}Restaurant Data{% endif %}</h5></div>
+    <div class="col-md-6">
+      <label class="form-label" for="{{ form.tenant_name.id_for_label }}">{{ form.tenant_name.label }}</label>
+      {{ form.tenant_name }}
+      {% for err in form.tenant_name.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+    <div class="col-md-6">
+      <label class="form-label" for="{{ form.tenant_slug.id_for_label }}">{{ form.tenant_slug.label }}</label>
+      {{ form.tenant_slug }}
+      {% if form.tenant_slug.help_text %}<small class="text-muted d-block">{{ form.tenant_slug.help_text }}</small>{% endif %}
+      {% for err in form.tenant_slug.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+    <div class="col-md-6">
+      <label class="form-label" for="{{ form.tenant_domain.id_for_label }}">{{ form.tenant_domain.label }}</label>
+      {{ form.tenant_domain }}
+      {% if form.tenant_domain.help_text %}<small class="text-muted d-block">{{ form.tenant_domain.help_text }}</small>{% endif %}
+      {% for err in form.tenant_domain.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+    <div class="col-md-3">
+      <label class="form-label" for="{{ form.default_language.id_for_label }}">{{ form.default_language.label }}</label>
+      {{ form.default_language }}
+    </div>
+    <div class="col-md-3">
+      <label class="form-label" for="{{ form.vat_rate.id_for_label }}">{{ form.vat_rate.label }}</label>
+      {{ form.vat_rate }}
+    </div>
+    <div class="col-12 form-check mt-0">
+      {{ form.tax_inclusive_pricing }}
+      <label class="form-check-label" for="{{ form.tax_inclusive_pricing.id_for_label }}">{{ form.tax_inclusive_pricing.label }}</label>
+    </div>
+
+    <div class="col-12 mt-2"><h5 class="mb-1">{% if active_language == 'ar' %}بيانات الاشتراك{% else %}Subscription Data{% endif %}</h5></div>
+    <div class="col-md-4">
+      <label class="form-label" for="{{ form.plan.id_for_label }}">{{ form.plan.label }}</label>
+      {{ form.plan }}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="{{ form.subscription_start_date.id_for_label }}">{{ form.subscription_start_date.label }}</label>
+      {{ form.subscription_start_date }}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="{{ form.subscription_end_date.id_for_label }}">{{ form.subscription_end_date.label }}</label>
+      {{ form.subscription_end_date }}
+      {% for err in form.subscription_end_date.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+    <div class="col-12 form-check mt-0">
+      {{ form.is_subscription_active }}
+      <label class="form-check-label" for="{{ form.is_subscription_active.id_for_label }}">{{ form.is_subscription_active.label }}</label>
+    </div>
+
+    <div class="col-12 mt-2"><h5 class="mb-1">{% if active_language == 'ar' %}بيانات الفرع الرئيسي{% else %}Main Branch Data{% endif %}</h5></div>
+    <div class="col-md-6">
+      <label class="form-label" for="{{ form.branch_name.id_for_label }}">{{ form.branch_name.label }}</label>
+      {{ form.branch_name }}
+    </div>
+    <div class="col-md-3">
+      <label class="form-label" for="{{ form.branch_code.id_for_label }}">{{ form.branch_code.label }}</label>
+      {{ form.branch_code }}
+    </div>
+    <div class="col-md-3">
+      <label class="form-label" for="{{ form.branch_phone.id_for_label }}">{{ form.branch_phone.label }}</label>
+      {{ form.branch_phone }}
+    </div>
+    <div class="col-12">
+      <label class="form-label" for="{{ form.branch_address.id_for_label }}">{{ form.branch_address.label }}</label>
+      {{ form.branch_address }}
+    </div>
+
+    <div class="col-12 mt-2"><h5 class="mb-1">{% if active_language == 'ar' %}حساب مالك المطعم{% else %}Restaurant Owner Account{% endif %}</h5></div>
+    <div class="col-md-4">
+      <label class="form-label" for="{{ form.owner_username.id_for_label }}">{{ form.owner_username.label }}</label>
+      {{ form.owner_username }}
+      {% for err in form.owner_username.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="{{ form.owner_email.id_for_label }}">{{ form.owner_email.label }}</label>
+      {{ form.owner_email }}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="{{ form.owner_phone.id_for_label }}">{{ form.owner_phone.label }}</label>
+      {{ form.owner_phone }}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="{{ form.owner_password.id_for_label }}">{{ form.owner_password.label }}</label>
+      {{ form.owner_password }}
+    </div>
+
+    <div class="col-12 d-flex gap-2 mt-3">
+      <button type="submit" class="btn btn-primary">{% if active_language == 'ar' %}إنشاء المطعم{% else %}Create Restaurant{% endif %}</button>
+      <a href="{% url 'system:tenants' %}" class="btn btn-outline-secondary">{% if active_language == 'ar' %}إلغاء{% else %}Cancel{% endif %}</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

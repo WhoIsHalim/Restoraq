@@ -1,0 +1,73 @@
+{% extends "app/base_app.html" %}
+
+{% block title %}{% if active_language == 'ar' %}الحسابات{% else %}Accounting{% endif %}{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}لوحة الحسابات{% else %}Accounting Dashboard{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}الداخل والصادر وصافي الربح لكل الفروع{% else %}In/Out and net profit per branch{% endif %}{% endblock %}
+
+{% block content %}
+{% if accounting_locked %}
+<div class="panel p-4 text-center">
+  <h5>{% if active_language == 'ar' %}هذه الميزة غير متاحة في باقتك الحالية{% else %}This feature is not available in your current plan{% endif %}</h5>
+  <p class="text-muted mb-0">{% if active_language == 'ar' %}فعّل باقة أعلى للوصول إلى لوحة الحسابات{% else %}Upgrade plan to unlock accounting dashboard{% endif %}</p>
+</div>
+{% else %}
+<div class="panel p-3 mb-3">
+  <form method="get" class="row g-2 align-items-end">
+    <div class="col-md-4 col-lg-3">
+      <label class="form-label">{% if active_language == 'ar' %}الفترة{% else %}Period{% endif %}</label>
+      <select class="form-select" name="period" onchange="this.form.submit()">
+        <option value="daily" {% if period == 'daily' %}selected{% endif %}>{% if active_language == 'ar' %}يومي{% else %}Daily{% endif %}</option>
+        <option value="weekly" {% if period == 'weekly' %}selected{% endif %}>{% if active_language == 'ar' %}أسبوعي{% else %}Weekly{% endif %}</option>
+        <option value="biweekly" {% if period == 'biweekly' %}selected{% endif %}>{% if active_language == 'ar' %}كل أسبوعين{% else %}Biweekly{% endif %}</option>
+        <option value="monthly" {% if period == 'monthly' %}selected{% endif %}>{% if active_language == 'ar' %}شهري{% else %}Monthly{% endif %}</option>
+        <option value="quarterly" {% if period == 'quarterly' %}selected{% endif %}>{% if active_language == 'ar' %}ربع سنوي{% else %}Quarterly{% endif %}</option>
+        <option value="yearly" {% if period == 'yearly' %}selected{% endif %}>{% if active_language == 'ar' %}سنوي{% else %}Yearly{% endif %}</option>
+      </select>
+    </div>
+    <div class="col-md-4 col-lg-3">
+      <label class="form-label">{% if active_language == 'ar' %}الفرع{% else %}Branch{% endif %}</label>
+      <select class="form-select" name="branch_id" onchange="this.form.submit()">
+        <option value="">{% if active_language == 'ar' %}كل الفروع{% else %}All Branches{% endif %}</option>
+        {% for b in branch_options %}
+        <option value="{{ b.id }}" {% if selected_branch_id == b.id|stringformat:"s" %}selected{% endif %}>{{ b.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </form>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-4"><div class="dash-card h-100"><h6 class="text-muted">{% if active_language == 'ar' %}إجمالي الداخل{% else %}Total Inflow{% endif %}</h6><h3>{{ sales }}</h3></div></div>
+  <div class="col-md-4"><div class="dash-card h-100"><h6 class="text-muted">{% if active_language == 'ar' %}إجمالي الصادر{% else %}Total Outflow{% endif %}</h6><h3>{{ expenses }}</h3></div></div>
+  <div class="col-md-4"><div class="dash-card h-100"><h6 class="text-muted">{% if active_language == 'ar' %}صافي الربح{% else %}Net Profit{% endif %}</h6><h3>{{ net_profit }}</h3></div></div>
+</div>
+
+<div class="panel p-3">
+  <h5 class="mb-3">{% if active_language == 'ar' %}تفاصيل الفروع{% else %}Branches Details{% endif %}</h5>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>{% if active_language == 'ar' %}الفرع{% else %}Branch{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الداخل{% else %}Inflow{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الصادر{% else %}Outflow{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الصافي{% else %}Net{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for row in branch_breakdown %}
+        <tr>
+          <td>{{ row.branch.name }}</td>
+          <td>{{ row.sales }}</td>
+          <td>{{ row.expenses }}</td>
+          <td>{{ row.net_profit }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4" class="text-center text-muted py-4">{% if active_language == 'ar' %}لا توجد بيانات{% else %}No data{% endif %}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

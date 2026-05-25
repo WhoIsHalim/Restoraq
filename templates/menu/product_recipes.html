@@ -1,0 +1,69 @@
+{% extends "app/base_app.html" %}
+
+{% block title %}{% if active_language == 'ar' %}مكونات الصنف{% else %}Product Ingredients{% endif %}{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}مكونات الصنف: {{ product.name }}{% else %}Product Ingredients: {{ product.name }}{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}تحديد كميات المكونات المطلوبة لكل وحدة بيع{% else %}Define ingredient usage per sold unit{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <div class="col-lg-4">
+    <div class="panel p-3">
+      <h5 class="mb-3">{% if active_language == 'ar' %}إضافة مكون{% else %}Add Ingredient{% endif %}</h5>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="mb-3">
+          <label class="form-label" for="{{ form.ingredient.id_for_label }}">{{ form.ingredient.label }}</label>
+          {{ form.ingredient }}
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="{{ form.quantity_per_unit.id_for_label }}">{{ form.quantity_per_unit.label }}</label>
+          {{ form.quantity_per_unit }}
+        </div>
+        <button class="btn btn-primary" type="submit">{% if active_language == 'ar' %}حفظ{% else %}Save{% endif %}</button>
+        <a class="btn btn-outline-secondary" href="{% url 'menu:products' %}">{% if active_language == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+      </form>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="panel p-3">
+      <h5 class="mb-3">{% if active_language == 'ar' %}القائمة الحالية{% else %}Current Recipe{% endif %}</h5>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>{% if active_language == 'ar' %}المكون{% else %}Ingredient{% endif %}</th>
+              <th>{% if active_language == 'ar' %}الكمية لكل وحدة{% else %}Qty per Unit{% endif %}</th>
+              <th>{% if active_language == 'ar' %}إجراءات{% else %}Actions{% endif %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in recipes %}
+            <tr>
+              <td>{{ row.ingredient.name }}</td>
+              <td>{{ row.quantity_per_unit }}</td>
+              <td>
+                <form method="post" class="d-inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="action" value="delete">
+                  <input type="hidden" name="recipe_id" value="{{ row.id }}">
+                  <button class="btn btn-sm btn-outline-danger" type="submit">
+                    {% if active_language == 'ar' %}حذف{% else %}Delete{% endif %}
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="3" class="text-center text-muted py-4">
+                {% if active_language == 'ar' %}لا توجد مكونات مضافة{% else %}No recipe lines yet{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

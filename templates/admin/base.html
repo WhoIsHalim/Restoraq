@@ -1,0 +1,108 @@
+﻿{% load i18n static admin_groups admin_labels %}
+<!doctype html>
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE|default:'en-us' }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr,auto' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="NONE,NOARCHIVE">
+  <title>{% block title %}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+  {% if LANGUAGE_BIDI %}
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+  {% else %}
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  {% endif %}
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  {% block extrastyle %}{% endblock %}
+  <link rel="stylesheet" href="{% static 'admin/css/custom_admin.css' %}?v=20260309h">
+  {% block extrahead %}{% endblock %}
+</head>
+<body class="app-shell workspace-shell-body admin-shell-body {% block bodyclass %}{% endblock %}">
+  <div class="system-layout admin-layout">
+    {% if not is_popup and has_permission %}
+    <aside class="system-sidebar admin-sidebar">
+      <div class="system-brand">
+        <div class="system-brand-title">Restoraq</div>
+        <small>{% if LANGUAGE_CODE|slice:':2' == 'ar' %}لوحة الإدارة{% else %}Admin Console{% endif %}</small>
+      </div>
+
+      <nav class="system-nav">
+        <div class="system-nav-heading">{% if LANGUAGE_CODE|slice:':2' == 'ar' %}الوصول السريع{% else %}Quick Access{% endif %}</div>
+        <a class="system-nav-link" href="{% url 'admin:index' %}">
+          <i class="fa-solid fa-gauge-high"></i>
+          <span>{% if LANGUAGE_CODE|slice:':2' == 'ar' %}الصفحة الرئيسية{% else %}Admin Home{% endif %}</span>
+        </a>
+        <a class="system-nav-link" href="{% url 'system:dashboard' %}">
+          <i class="fa-solid fa-layer-group"></i>
+          <span>{% if LANGUAGE_CODE|slice:':2' == 'ar' %}لوحة السيستم{% else %}System Dashboard{% endif %}</span>
+        </a>
+        <a class="system-nav-link" href="{% url 'core:home' %}">
+          <i class="fa-solid fa-earth-africa"></i>
+          <span>{% if LANGUAGE_CODE|slice:':2' == 'ar' %}الموقع التسويقي{% else %}Marketing Site{% endif %}</span>
+        </a>
+
+        {% if available_apps %}
+          {% group_admin_apps available_apps LANGUAGE_CODE as grouped_apps %}
+          {% for group in grouped_apps %}
+          <div class="system-nav-heading mt-3">{{ group.label }}</div>
+            {% for app in group.apps %}
+              {% admin_app_name app.app_label app.name LANGUAGE_CODE as app_display_name %}
+              <a class="system-nav-link" href="{{ app.app_url }}">
+                <i class="fa-solid fa-folder"></i>
+                <span>{{ app_display_name }}</span>
+              </a>
+            {% endfor %}
+          {% endfor %}
+        {% endif %}
+      </nav>
+
+      <div class="system-side-footer">
+        <p>{% if LANGUAGE_CODE|slice:':2' == 'ar' %}إدارة المحتوى والاشتراكات والبيانات في واجهة موحدة.{% else %}Manage content, subscriptions, and data in one unified console.{% endif %}</p>
+      </div>
+    </aside>
+    {% endif %}
+
+    <section class="system-main admin-main">
+      {% if not is_popup and has_permission %}
+      <header class="system-topbar admin-topbar">
+        <div>
+          <h2 class="mb-1">{% block content_title %}{% if title %}{{ title }}{% else %}{% if LANGUAGE_CODE|slice:':2' == 'ar' %}لوحة الإدارة{% else %}Admin Console{% endif %}{% endif %}{% endblock %}</h2>
+          <p class="mb-0 text-muted">{% block content_subtitle %}{% if subtitle %}{{ subtitle }}{% else %}{% if LANGUAGE_CODE|slice:':2' == 'ar' %}لوحة متقدمة لإدارة النظام{% else %}Advanced administration workspace{% endif %}{% endif %}{% endblock %}</p>
+        </div>
+        <div class="admin-topbar-actions">
+          {% block userlinks %}{% endblock %}
+        </div>
+      </header>
+      {% endif %}
+
+      <div class="system-content admin-content" id="content-start" tabindex="-1">
+        {% block messages %}
+          {% if messages %}
+            <div class="mb-3">
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }} mb-2">{{ message|capfirst }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endblock messages %}
+
+        <div id="content" class="admin-content-body {% block coltype %}colM{% endblock %}">
+          {% block pretitle %}{% endblock %}
+          {% block content %}
+            {% block object-tools %}{% endblock %}
+            {{ content }}
+          {% endblock %}
+          {% block sidebar %}{% endblock %}
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  {% block extrabody %}{% endblock extrabody %}
+</body>
+</html>

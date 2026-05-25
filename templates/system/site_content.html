@@ -1,0 +1,84 @@
+{% extends "system/base_system.html" %}
+
+{% block title %}{% if active_language == 'ar' %}محتوى الموقع{% else %}Website Content{% endif %}{% endblock %}
+{% block system_title %}{% if active_language == 'ar' %}إدارة محتوى الموقع{% else %}Website Content Management{% endif %}{% endblock %}
+{% block system_subtitle %}
+{% if active_language == 'ar' %}
+تعديل المحتوى الحالي مباشرة (عربي/إنجليزي) مع إمكانية إضافة صفحات CMS جديدة.
+{% else %}
+Edit existing content directly (Arabic/English) and optionally add CMS pages.
+{% endif %}
+{% endblock %}
+
+{% block system_content %}
+<div class="row g-3">
+  {% for model in marketing_models %}
+  <div class="col-lg-4">
+    <div class="panel p-3 h-100">
+      <h5 class="mb-3">{{ model.label }}</h5>
+      <div class="d-flex flex-column gap-2">
+        {% for row in model.records %}
+        <a class="btn btn-outline-primary" href="{{ row.edit_url }}">
+          {% if row.language == 'ar' %}
+            {% if active_language == 'ar' %}تعديل النسخة العربية{% else %}Edit Arabic Version{% endif %}
+          {% else %}
+            {% if active_language == 'ar' %}تعديل النسخة الإنجليزية{% else %}Edit English Version{% endif %}
+          {% endif %}
+        </a>
+        {% endfor %}
+        <a class="btn btn-light border" href="{{ model.list_url }}">
+          {% if active_language == 'ar' %}فتح القائمة الكاملة{% else %}Open Full List{% endif %}
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="panel p-3 mt-3">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h5 class="mb-0">{% if active_language == 'ar' %}صفحات CMS{% else %}CMS Pages{% endif %}</h5>
+    <a class="btn btn-primary" href="{{ cms_add_url }}">
+      {% if active_language == 'ar' %}إضافة صفحة جديدة{% else %}Add New Page{% endif %}
+    </a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>{% if active_language == 'ar' %}العنوان{% else %}Title{% endif %}</th>
+          <th>Slug</th>
+          <th>{% if active_language == 'ar' %}منشور{% else %}Published{% endif %}</th>
+          <th>{% if active_language == 'ar' %}تعديل{% else %}Edit{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for page in cms_pages %}
+        <tr>
+          <td class="fw-semibold">{{ page.title }}</td>
+          <td><code>{{ page.slug }}</code></td>
+          <td>
+            {% if page.is_published %}
+            <span class="status-pill status-green">{% if active_language == 'ar' %}نعم{% else %}Yes{% endif %}</span>
+            {% else %}
+            <span class="status-pill status-gray">{% if active_language == 'ar' %}لا{% else %}No{% endif %}</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{{ page.edit_url }}" class="btn btn-sm btn-outline-primary">
+              {% if active_language == 'ar' %}تعديل{% else %}Edit{% endif %}
+            </a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="4" class="text-muted text-center py-4">
+            {% if active_language == 'ar' %}لا توجد صفحات CMS حالياً{% else %}No CMS pages yet{% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

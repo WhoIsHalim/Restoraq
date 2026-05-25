@@ -1,0 +1,70 @@
+{% extends "app/base_app.html" %}
+{% block title %}{% if active_language == 'ar' %}المخزون{% else %}Inventory{% endif %}{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}إدارة المخزون{% else %}Inventory Management{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}إدارة المكونات ومستويات المخزون ونقطة إعادة الطلب{% else %}Manage ingredients, stock levels, and reorder points{% endif %}{% endblock %}
+{% block content %}
+<div class="panel p-3 mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+  <div>
+    <h5 class="mb-1">{% if active_language == 'ar' %}المكونات{% else %}Ingredients{% endif %}</h5>
+    <p class="text-muted mb-0">
+      {% if active_language == 'ar' %}كل المكونات مربوطة بالمطعم الحالي والفرع.{% else %}All ingredients are scoped to current tenant and branch.{% endif %}
+    </p>
+  </div>
+  {% if can_write %}
+  <a class="btn btn-primary" href="{% url 'inventory:ingredient-create' %}">
+    {% if active_language == 'ar' %}إضافة مكون{% else %}Add Ingredient{% endif %}
+  </a>
+  {% endif %}
+</div>
+
+<div class="panel p-3">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>{% if active_language == 'ar' %}الاسم{% else %}Name{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الوحدة{% else %}Unit{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الرصيد الحالي{% else %}Current Stock{% endif %}</th>
+          <th>{% if active_language == 'ar' %}حد إعادة الطلب{% else %}Reorder Level{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الفرع{% else %}Branch{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+          {% if can_write %}
+          <th>{% if active_language == 'ar' %}إجراءات{% else %}Actions{% endif %}</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+      {% for item in ingredients %}
+        <tr>
+          <td class="fw-semibold">{{ item.name }}</td>
+          <td>{{ item.unit }}</td>
+          <td>{{ item.current_stock }}</td>
+          <td>{{ item.reorder_level }}</td>
+          <td>{{ item.branch|default:"-" }}</td>
+          <td>
+            {% if item.is_active %}
+              <span class="status-pill status-green">{% if active_language == 'ar' %}نشط{% else %}Active{% endif %}</span>
+            {% else %}
+              <span class="status-pill status-gray">{% if active_language == 'ar' %}غير نشط{% else %}Inactive{% endif %}</span>
+            {% endif %}
+          </td>
+          {% if can_write %}
+          <td>
+            <a class="btn btn-sm btn-outline-primary" href="{% url 'inventory:ingredient-edit' item.id %}">
+              {% if active_language == 'ar' %}تعديل{% else %}Edit{% endif %}
+            </a>
+          </td>
+          {% endif %}
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="{% if can_write %}7{% else %}6{% endif %}" class="text-center text-muted py-4">
+            {% if active_language == 'ar' %}لا توجد مكونات{% else %}No ingredients found{% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,239 @@
+﻿{% extends "system/base_system.html" %}
+{% load ui_extras %}
+
+{% block title %}{% if active_language == 'ar' %}لوحة مدير النظام{% else %}System Dashboard{% endif %}{% endblock %}
+{% block system_title %}{% if active_language == 'ar' %}لوحة تحكم المنصة{% else %}Platform Control Center{% endif %}{% endblock %}
+{% block system_subtitle %}{% if active_language == 'ar' %}متابعة المطاعم والاشتراكات والمبيعات الكلية ومحتوى الموقع{% else %}Monitor tenants, subscriptions, platform sales, and website content{% endif %}{% endblock %}
+
+{% block system_top_actions %}
+<a class="btn btn-primary" href="{% url 'system:tenant-create' %}">{% if active_language == 'ar' %}+ إضافة مطعم{% else %}+ Add Restaurant{% endif %}</a>
+<a class="btn btn-outline-primary" href="{% url 'system:site-content' %}">{% if active_language == 'ar' %}إدارة محتوى الموقع{% else %}Manage Website Content{% endif %}</a>
+<a class="btn btn-outline-secondary" href="{{ slider_admin_url }}">{% if active_language == 'ar' %}إدارة السلايدر{% else %}Manage Slider{% endif %}</a>
+{% if active_system_tenant %}
+<form method="post" action="{% url 'system:tenant-switch-exit' %}">
+  {% csrf_token %}
+  <button class="btn btn-outline-danger" type="submit">{% if active_language == 'ar' %}الخروج من سياق المطعم{% else %}Exit Tenant Context{% endif %}</button>
+</form>
+{% endif %}
+{% endblock %}
+
+{% block system_content %}
+{% if active_system_tenant %}
+<div class="alert alert-warning mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+  <div>
+    {% if active_language == 'ar' %}
+    أنت الآن داخل سياق المطعم: <strong>{{ active_system_tenant.name }}</strong>. كل شاشات التشغيل ستعمل على هذا المطعم.
+    {% else %}
+    You are currently inside tenant context: <strong>{{ active_system_tenant.name }}</strong>. Operational modules now run for this tenant.
+    {% endif %}
+  </div>
+  <a class="btn btn-sm btn-dark" href="{% url 'core:dashboard' %}">{% if active_language == 'ar' %}فتح مساحة المطعم{% else %}Open Tenant Workspace{% endif %}</a>
+</div>
+{% endif %}
+
+<div class="row g-3 mb-3">
+  <div class="col-md-6 col-xl-3"><div class="sys-stat-card border-primary"><p class="sys-stat-title">{% if active_language == 'ar' %}إجمالي المطاعم{% else %}Total Tenants{% endif %}</p><h3 class="mb-0">{{ tenant_count }}</h3></div></div>
+  <div class="col-md-6 col-xl-3"><div class="sys-stat-card border-success"><p class="sys-stat-title">{% if active_language == 'ar' %}مطاعم نشطة{% else %}Active Tenants{% endif %}</p><h3 class="mb-0">{{ active_tenant_count }}</h3></div></div>
+  <div class="col-md-6 col-xl-3"><div class="sys-stat-card border-info"><p class="sys-stat-title">{% if active_language == 'ar' %}مبيعات اليوم (المنصة){% else %}Platform Daily Sales{% endif %}</p><h3 class="mb-0">{{ platform_daily_sales }}</h3></div></div>
+  <div class="col-md-6 col-xl-3"><div class="sys-stat-card border-warning"><p class="sys-stat-title">{% if active_language == 'ar' %}مبيعات الشهر (المنصة){% else %}Platform Monthly Sales{% endif %}</p><h3 class="mb-0">{{ platform_monthly_sales }}</h3></div></div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-6 col-xl-3"><div class="sys-stat-card border-warning"><p class="sys-stat-title">{% if active_language == 'ar' %}مطاعم غير نشطة{% else %}Inactive Tenants{% endif %}</p><h3 class="mb-0">{{ inactive_tenant_count }}</h3></div></div>
+  <div class="col-md-6 col-xl-3"><div class="sys-stat-card border-info"><p class="sys-stat-title">{% if active_language == 'ar' %}اشتراكات تنتهي قريباً{% else %}Expiring Soon{% endif %}</p><h3 class="mb-0">{{ expiring_soon_count }}</h3></div></div>
+  <div class="col-md-6 col-xl-3"><div class="sys-stat-card border-primary"><p class="sys-stat-title">{% if active_language == 'ar' %}مراجعات مدفوعات{% else %}Payment Reviews{% endif %}</p><h3 class="mb-0">{{ pending_payment_reviews }}</h3></div></div>
+  <div class="col-md-6 col-xl-3"><div class="sys-stat-card border-success"><p class="sys-stat-title">{% if active_language == 'ar' %}تذاكر دعم مفتوحة{% else %}Open Tickets{% endif %}</p><h3 class="mb-0">{{ support_open_count }}</h3></div></div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-4"><div class="panel p-3 h-100"><h6 class="text-muted mb-1">{% if active_language == 'ar' %}اشتراكات نشطة{% else %}Active Subscriptions{% endif %}</h6><h4>{{ active_subscriptions }}</h4></div></div>
+  <div class="col-md-4"><div class="panel p-3 h-100"><h6 class="text-muted mb-1">{% if active_language == 'ar' %}فترة السماح{% else %}Grace Subscriptions{% endif %}</h6><h4>{{ grace_subscriptions }}</h4></div></div>
+  <div class="col-md-4"><div class="panel p-3 h-100"><h6 class="text-muted mb-1">{% if active_language == 'ar' %}اشتراكات منتهية{% else %}Expired Subscriptions{% endif %}</h6><h4>{{ expired_subscriptions }}</h4></div></div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-lg-7">
+    <div class="panel p-3 h-100">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">{% if active_language == 'ar' %}تنبيهات تشغيلية{% else %}Operational Alerts{% endif %}</h5>
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'system:subscriptions' %}">{% if active_language == 'ar' %}إدارة الاشتراكات{% else %}Manage Subscriptions{% endif %}</a>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="soft-card h-100">
+            <div class="fw-semibold mb-2">{% if active_language == 'ar' %}اشتراكات منتهية{% else %}Expired Subscriptions{% endif %}</div>
+            <ul class="list-unstyled mb-0">
+              {% for row in expired_subscriptions_list %}
+              <li class="d-flex justify-content-between border-bottom py-1">
+                <span>{{ row.tenant.name }}</span>
+                <small class="text-muted">{{ row.grace_period_end|date:"Y-m-d" }}</small>
+              </li>
+              {% empty %}
+              <li class="text-muted small">{% if active_language == 'ar' %}لا يوجد{% else %}None{% endif %}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="soft-card h-100">
+            <div class="fw-semibold mb-2">{% if active_language == 'ar' %}النسخ الاحتياطي الفاشل{% else %}Failed Backups{% endif %}</div>
+            <ul class="list-unstyled mb-0">
+              {% for row in failed_backups %}
+              <li class="d-flex justify-content-between border-bottom py-1">
+                <span>{{ row.created_at|date:"Y-m-d H:i" }}</span>
+                <small class="text-muted">{{ row.get_status_display }}</small>
+              </li>
+              {% empty %}
+              <li class="text-muted small">{% if active_language == 'ar' %}لا يوجد{% else %}None{% endif %}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="soft-card">
+            <div class="fw-semibold mb-2">{% if active_language == 'ar' %}مراجعات المدفوعات{% else %}Payment Reviews{% endif %}</div>
+            <ul class="list-unstyled mb-0">
+              {% for row in pending_payment_reviews_list %}
+              <li class="d-flex justify-content-between border-bottom py-1">
+                <span>{{ row.payment.order.order_number }}</span>
+                <small class="text-muted">{{ row.payment.amount }}</small>
+              </li>
+              {% empty %}
+              <li class="text-muted small">{% if active_language == 'ar' %}لا يوجد{% else %}None{% endif %}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="panel p-3 h-100">
+      <h5 class="mb-3">{% if active_language == 'ar' %}مهام اليوم{% else %}Today Tasks{% endif %}</h5>
+      <ul class="list-group list-group-flush">
+        {% for task in system_tasks %}
+        <li class="list-group-item px-0">
+          {% if active_language == 'ar' %}{{ task.ar }}{% else %}{{ task.en }}{% endif %}
+        </li>
+        {% empty %}
+        <li class="list-group-item px-0 text-muted">{% if active_language == 'ar' %}لا توجد مهام حالية{% else %}No tasks right now{% endif %}</li>
+        {% endfor %}
+      </ul>
+      <div class="d-flex gap-2 flex-wrap mt-3">
+        <a class="btn btn-sm btn-outline-primary" href="{% url 'system:tenants' %}">{% if active_language == 'ar' %}إدارة المطاعم{% else %}Manage Tenants{% endif %}</a>
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'system:support-tickets' %}">{% if active_language == 'ar' %}تذاكر الدعم{% else %}Support Tickets{% endif %}</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-lg-7">
+    <div class="panel p-3 h-100">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">{% if active_language == 'ar' %}أعلى المطاعم مبيعًا{% else %}Top Tenants by Sales{% endif %}</h5>
+        <a class="btn btn-sm btn-outline-primary" href="{% url 'system:tenants' %}">{% if active_language == 'ar' %}كل المطاعم{% else %}All Tenants{% endif %}</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead><tr><th>{% if active_language == 'ar' %}المطعم{% else %}Tenant{% endif %}</th><th>{% if active_language == 'ar' %}المبيعات{% else %}Sales{% endif %}</th><th>{% if active_language == 'ar' %}دخول{% else %}Enter{% endif %}</th></tr></thead>
+          <tbody>
+            {% for tenant in top_tenants_by_sales %}
+            <tr>
+              <td class="fw-semibold">{{ tenant.name }}</td>
+              <td>{{ tenant.total_sales|default:0 }}</td>
+              <td><a class="btn btn-sm btn-outline-secondary" href="{% url 'system:tenant-detail' tenant.slug %}">{% if active_language == 'ar' %}تفاصيل{% else %}Details{% endif %}</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="text-center text-muted py-4">{% if active_language == 'ar' %}لا توجد بيانات مبيعات بعد{% else %}No sales data yet{% endif %}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="panel p-3 h-100">
+      <h5 class="mb-3">{% if active_language == 'ar' %}اشتراكات تنتهي قريبًا{% else %}Expiring Soon{% endif %}</h5>
+      <ul class="list-group list-group-flush">
+        {% for row in expiring_subscriptions %}
+        <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+          <div><div class="fw-semibold">{{ row.tenant.name }}</div><small class="text-muted">{{ row.plan|localized_plan_name:active_language }}</small></div>
+          <span class="status-pill status-amber">{{ row.end_date|date:"Y-m-d" }}</span>
+        </li>
+        {% empty %}
+        <li class="list-group-item px-0 text-muted">{% if active_language == 'ar' %}لا توجد اشتراكات قريبة الانتهاء{% else %}No subscriptions expiring soon{% endif %}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-lg-6">
+    <div class="panel p-3 h-100">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">{% if active_language == 'ar' %}أحدث المطاعم{% else %}Recent Tenants{% endif %}</h5>
+        <a class="btn btn-sm btn-outline-primary" href="{% url 'system:tenants' %}">{% if active_language == 'ar' %}كل المطاعم{% else %}All Tenants{% endif %}</a>
+      </div>
+      <ul class="list-group list-group-flush">
+        {% for tenant in recent_tenants %}
+        <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+          <span>{{ tenant.name }}</span>
+          <small class="text-muted">{{ tenant.created_at|date:"Y-m-d" }}</small>
+        </li>
+        {% empty %}
+        <li class="list-group-item px-0 text-muted">{% if active_language == 'ar' %}لا توجد بيانات{% else %}No data yet{% endif %}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="panel p-3 h-100">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">{% if active_language == 'ar' %}تذاكر الدعم الأخيرة{% else %}Recent Support Tickets{% endif %}</h5>
+        <a class="btn btn-sm btn-outline-primary" href="{% url 'system:support-tickets' %}">{% if active_language == 'ar' %}كل التذاكر{% else %}All Tickets{% endif %}</a>
+      </div>
+      <ul class="list-group list-group-flush">
+        {% for ticket in recent_support_tickets %}
+        <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+          <div>
+            <div class="fw-semibold">{{ ticket.subject }}</div>
+            <small class="text-muted">{{ ticket.tenant|default:"-" }}</small>
+          </div>
+          <span class="status-pill {% if ticket.status == 'open' %}status-amber{% elif ticket.status == 'in_progress' %}status-gray{% else %}status-green{% endif %}">
+            {{ ticket.get_status_display }}
+          </span>
+        </li>
+        {% empty %}
+        <li class="list-group-item px-0 text-muted">{% if active_language == 'ar' %}لا توجد تذاكر بعد{% else %}No tickets yet{% endif %}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="panel p-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">{% if active_language == 'ar' %}آخر أحداث التدقيق{% else %}Recent Audit Events{% endif %}</h5>
+    <a class="btn btn-sm btn-outline-primary" href="{% url 'system:audit-logs' %}">{% if active_language == 'ar' %}كل السجلات{% else %}All Logs{% endif %}</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead><tr><th>{% if active_language == 'ar' %}الوقت{% else %}Time{% endif %}</th><th>{% if active_language == 'ar' %}المطعم{% else %}Tenant{% endif %}</th><th>{% if active_language == 'ar' %}المستخدم{% else %}User{% endif %}</th><th>{% if active_language == 'ar' %}الإجراء{% else %}Action{% endif %}</th></tr></thead>
+      <tbody>
+      {% for log in recent_audit_logs %}
+        <tr>
+          <td>{{ log.timestamp|date:"Y-m-d H:i" }}</td>
+          <td>{{ log.tenant|default:"-" }}</td>
+          <td>{{ log.user|default:"-" }}</td>
+          <td>{{ log.action|localized_audit_action:active_language }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="4" class="text-center text-muted py-4">{% if active_language == 'ar' %}لا توجد أحداث حتى الآن{% else %}No events yet{% endif %}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

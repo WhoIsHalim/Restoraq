@@ -1,0 +1,75 @@
+﻿{% extends "app/base_app.html" %}
+{% block title %}{% if active_language == 'ar' %}سجل الطلبات{% else %}Order Log{% endif %}{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}سجل الطلبات{% else %}Order Log{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}سجل كامل للطلبات والمدفوعات وحالة المطبخ{% else %}Complete history of orders, payments, and kitchen status{% endif %}{% endblock %}
+{% block content %}
+<div class="panel p-3">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>{% if active_language == 'ar' %}الفرع{% else %}Branch{% endif %}</th>
+          <th>{% if active_language == 'ar' %}نوع الطلب{% else %}Order Type{% endif %}</th>
+          <th>{% if active_language == 'ar' %}حالة الطلب{% else %}Order Status{% endif %}</th>
+          <th>{% if active_language == 'ar' %}حالة المطبخ{% else %}Kitchen Status{% endif %}</th>
+          <th>{% if active_language == 'ar' %}مدة التحضير (دقيقة){% else %}Cook Time (min){% endif %}</th>
+          <th>{% if active_language == 'ar' %}الإجمالي{% else %}Total{% endif %}</th>
+          <th>{% if active_language == 'ar' %}وقت الإنشاء{% else %}Created{% endif %}</th>
+          <th>{% if active_language == 'ar' %}إجراءات{% else %}Actions{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for order in orders %}
+        <tr>
+          <td class="fw-semibold">{{ order.order_number }}</td>
+          <td>{{ order.branch|default:"-" }}</td>
+          <td>
+            {% if order.order_type == 'delivery' %}
+              {% if active_language == 'ar' %}دليفري{% else %}Delivery{% endif %}
+            {% elif order.order_type == 'takeaway' %}
+              {% if active_language == 'ar' %}تيكاوي{% else %}Takeaway{% endif %}
+            {% else %}
+              {% if active_language == 'ar' %}صالة{% else %}Dine In{% endif %}
+            {% endif %}
+          </td>
+          <td>
+            {% if order.status == 'confirmed' %}
+              <span class="status-pill status-green">{% if active_language == 'ar' %}مؤكد{% else %}Confirmed{% endif %}</span>
+            {% elif order.status == 'cancelled' %}
+              <span class="status-pill status-amber">{% if active_language == 'ar' %}ملغي{% else %}Cancelled{% endif %}</span>
+            {% else %}
+              <span class="status-pill status-gray">{% if active_language == 'ar' %}مسودة{% else %}Draft{% endif %}</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if order.kitchen_status == 'ready' %}
+              <span class="status-pill status-green">{% if active_language == 'ar' %}جاهز{% else %}Ready{% endif %}</span>
+            {% elif order.kitchen_status == 'preparing' %}
+              <span class="status-pill status-amber">{% if active_language == 'ar' %}قيد التحضير{% else %}Preparing{% endif %}</span>
+            {% else %}
+              <span class="status-pill status-gray">{% if active_language == 'ar' %}بانتظار التحضير{% else %}Pending{% endif %}</span>
+            {% endif %}
+          </td>
+          <td>{{ order.cooking_duration_minutes|default:"-" }}</td>
+          <td>{{ order.total_amount }}</td>
+          <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
+          <td class="d-flex gap-1 flex-wrap">
+            <a class="btn btn-sm btn-outline-primary" href="{% url 'orders:detail' order.id %}">{% if active_language == 'ar' %}فتح{% else %}Open{% endif %}</a>
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'orders:edit' order.id %}">{% if active_language == 'ar' %}تعديل{% else %}Edit{% endif %}</a>
+            {% if order.status != 'draft' %}
+            <form method="post" action="{% url 'orders:reopen' order.id %}" class="d-inline">
+              {% csrf_token %}
+              <button class="btn btn-sm btn-outline-warning" type="submit">{% if active_language == 'ar' %}إعادة فتح{% else %}Reopen{% endif %}</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="9" class="text-center text-muted py-4">{% if active_language == 'ar' %}لا توجد طلبات{% else %}No orders available{% endif %}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

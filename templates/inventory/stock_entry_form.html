@@ -1,0 +1,48 @@
+{% extends "app/base_app.html" %}
+{% block title %}{% if active_language == 'ar' %}تسجيل حركة مخزون{% else %}Record Stock Entry{% endif %}{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}تسجيل حركة مخزون{% else %}Record Stock Movement{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}إضافة حركة غير قابلة للتعديل في دفتر المخزون{% else %}Add immutable movement entry to stock ledger{% endif %}{% endblock %}
+{% block content %}
+<div class="panel p-4">
+  <form method="post" class="row g-3">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="col-md-6">
+      <label class="form-label" for="{{ form.branch.id_for_label }}">{{ form.branch.label }}</label>
+      {{ form.branch }}
+      {% for err in form.branch.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+    <div class="col-md-6">
+      <label class="form-label" for="{{ form.ingredient.id_for_label }}">{{ form.ingredient.label }}</label>
+      {{ form.ingredient }}
+      {% for err in form.ingredient.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="{{ form.movement_type.id_for_label }}">{{ form.movement_type.label }}</label>
+      {{ form.movement_type }}
+      {% for err in form.movement_type.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="{{ form.quantity.id_for_label }}">{{ form.quantity.label }}</label>
+      {{ form.quantity }}
+      {% for err in form.quantity.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="{{ form.reference.id_for_label }}">{{ form.reference.label }}</label>
+      {{ form.reference }}
+      {% for err in form.reference.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+    <div class="col-12">
+      <label class="form-label" for="{{ form.note.id_for_label }}">{{ form.note.label }}</label>
+      {{ form.note }}
+      {% for err in form.note.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+
+    <div class="col-12 d-flex gap-2">
+      <button type="submit" class="btn btn-primary">{% if active_language == 'ar' %}تسجيل الحركة{% else %}Record Entry{% endif %}</button>
+      <a href="{% url 'inventory:stock-entries' %}" class="btn btn-outline-secondary">{% if active_language == 'ar' %}إلغاء{% else %}Cancel{% endif %}</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

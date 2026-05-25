@@ -1,0 +1,102 @@
+﻿{% extends "app/base_app.html" %}
+
+{% block title %}{% if active_language == 'ar' %}شاشة المطبخ{% else %}Kitchen Screen{% endif %}{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}شاشة المطبخ{% else %}Kitchen Display{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}الطلبات الجاري تحضيرها أو غير المبدوءة فقط{% else %}Pending and in-progress kitchen orders only{% endif %}{% endblock %}
+
+{% block content %}
+<div class="panel p-3 mb-3 d-flex justify-content-between align-items-center">
+  <h5 class="mb-0">{% if active_language == 'ar' %}قائمة التحضير{% else %}Prep Queue{% endif %}</h5>
+  <a class="btn btn-outline-primary btn-sm" href="{% url 'orders:list' %}">{% if active_language == 'ar' %}فتح سجل الطلبات{% else %}Open Order Log{% endif %}</a>
+</div>
+
+<div id="kitchenError" class="alert alert-danger d-none"></div>
+
+<div class="row g-3">
+  {% for order in queue_orders %}
+  <div class="col-md-6 col-xl-4">
+    <div class="panel p-3 h-100">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <strong>{{ order.order_number }}</strong>
+        <span class="status-pill {% if order.kitchen_status == 'preparing' %}status-amber{% else %}status-gray{% endif %}">
+          {% if order.kitchen_status == 'preparing' %}
+            {% if active_language == 'ar' %}قيد التحضير{% else %}Preparing{% endif %}
+          {% else %}
+            {% if active_language == 'ar' %}بانتظار التحضير{% else %}Pending{% endif %}
+          {% endif %}
+        </span>
+      </div>
+      <div class="mb-2 text-muted small">{% if active_language == 'ar' %}الفرع{% else %}Branch{% endif %}: {{ order.branch|default:"-" }}</div>
+      <div class="mb-3 text-muted small">{% if active_language == 'ar' %}وقت الإنشاء{% else %}Created{% endif %}: {{ order.created_at|date:"Y-m-d H:i" }}</div>
+      <div class="mb-3">
+        <div class="fw-semibold mb-1">{% if active_language == 'ar' %}تفاصيل الطلب{% else %}Order Details{% endif %}</div>
+        <ul class="list-unstyled mb-2">
+          {% for item in order.items.all %}
+          <li class="d-flex justify-content-between align-items-center border-bottom py-1">
+            <span>{{ item.name_snapshot }}</span>
+            <span class="text-muted">x{{ item.quantity }}</span>
+          </li>
+          {% empty %}
+          <li class="text-muted small">{% if active_language == 'ar' %}لا توجد عناصر{% else %}No items{% endif %}</li>
+          {% endfor %}
+        </ul>
+        {% if order.notes %}
+        <div class="soft-card">
+          <div class="small text-muted mb-1">{% if active_language == 'ar' %}ملاحظات{% else %}Notes{% endif %}</div>
+          <div class="fw-semibold">{{ order.notes }}</div>
+        </div>
+        {% endif %}
+      </div>
+      <div class="d-flex gap-2">
+        {% if order.kitchen_status == 'pending' %}
+        <button type="button" class="btn btn-warning btn-sm w-100 kitchen-action" data-order-id="{{ order.id }}" data-status="preparing">
+          {% if active_language == 'ar' %}بدء التحضير{% else %}Start Prep{% endif %}
+        </button>
+        {% endif %}
+        <button type="button" class="btn btn-success btn-sm w-100 kitchen-action" data-order-id="{{ order.id }}" data-status="ready">
+          {% if active_language == 'ar' %}تم الانتهاء{% else %}Mark Ready{% endif %}
+        </button>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div class="panel p-4 text-center text-muted">{% if active_language == 'ar' %}لا توجد طلبات حالية للمطبخ{% else %}No active kitchen orders{% endif %}</div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const errorBox = document.getElementById("kitchenError");
+  document.querySelectorAll(".kitchen-action").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      errorBox.classList.add("d-none");
+      const orderId = btn.dataset.orderId;
+      const status = btn.dataset.status;
+      const body = new URLSearchParams();
+      body.append("kitchen_status", status);
+      try {
+        const response = await fetch(`/orders/kitchen/${orderId}/status/`, {
+          method: "POST",
+          headers: { "X-CSRFToken": (typeof window.getCsrfToken === "function" ? window.getCsrfToken() : "") },
+          body,
+        });
+        if (response.ok) {
+          window.location.reload();
+          return;
+        }
+        const text = await response.text();
+        errorBox.textContent = text || "Request failed";
+        errorBox.classList.remove("d-none");
+      } catch (err) {
+        errorBox.textContent = "Network error";
+        errorBox.classList.remove("d-none");
+      }
+      btn.disabled = false;
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,41 @@
+﻿{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block title %}{% if errors %}{% translate "Error:" %} {% endif %}{{ block.super }}{% endblock %}
+
+{% block extrahead %}{{ block.super }}
+<script src="{% url 'admin:jsi18n' %}"></script>
+{{ media }}
+{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-form{% endblock %}
+
+{% block content %}
+  <div id="content-main" class="panel p-3">
+    {% if errors %}
+      <p class="errornote">
+      {% if errors|length == 1 %}{% translate "Please correct the error below." %}{% else %}{% translate "Please correct the errors below." %}{% endif %}
+      </p>
+      {{ adminform.form.non_field_errors }}
+    {% endif %}
+
+    <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.model_name }}_form" novalidate class="admin-form">
+      {% csrf_token %}
+      {% block form_top %}{% endblock %}
+      <fieldset class="module aligned admin-fieldset">
+        {% for fieldset in adminform %}
+          {% include "admin/includes/fieldset.html" %}
+        {% endfor %}
+      </fieldset>
+      {% block after_field_sets %}{% endblock %}
+      {% block inline_field_sets %}
+        {% for inline_admin_formset in inline_admin_formsets %}
+          {% include inline_admin_formset.opts.template %}
+        {% endfor %}
+      {% endblock %}
+      {% block after_related_objects %}{% endblock %}
+      {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+      {% if adminform.form.non_field_errors %}{{ adminform.form.non_field_errors }}{% endif %}
+    </form>
+  </div>
+{% endblock %}

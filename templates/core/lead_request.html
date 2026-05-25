@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="panel p-4 mb-4">
+  <div class="row align-items-center g-4">
+    <div class="col-lg-7">
+      <span class="hero-slide-kicker">{% if active_language == 'ar' %}تواصل مع الفريق{% else %}Reach Our Team{% endif %}</span>
+      <h1 class="hero-slide-title mt-2">{{ page_title }}</h1>
+      <p class="hero-slide-subtitle">{{ page_subtitle }}</p>
+    </div>
+    <div class="col-lg-5">
+      <div class="hero-slide-media">
+        <img src="{% static 'img/undraw_profile_2.svg' %}" alt="contact">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="panel p-4">
+  <form method="post" class="row g-3">
+    {% csrf_token %}
+    <div class="col-md-6">
+      <label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+      {{ form.name }}
+      {% for err in form.name.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+    <div class="col-md-6">
+      <label class="form-label" for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+      {{ form.phone }}
+      {% for err in form.phone.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+    <div class="col-md-6">
+      <label class="form-label" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+      {{ form.email }}
+      {% for err in form.email.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+    <div class="col-md-6">
+      <label class="form-label" for="{{ form.company.id_for_label }}">{{ form.company.label }}</label>
+      {{ form.company }}
+      {% for err in form.company.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+    <div class="col-md-6">
+      <label class="form-label" for="{{ form.inquiry_category.id_for_label }}">{{ form.inquiry_category.label }}</label>
+      {{ form.inquiry_category }}
+      {% for err in form.inquiry_category.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+    <div class="col-md-6">
+      <label class="form-label" for="{{ form.contact_method.id_for_label }}">{{ form.contact_method.label }}</label>
+      {{ form.contact_method }}
+      {% for err in form.contact_method.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+    <div class="col-md-6">
+      <label class="form-label" for="{{ form.preferred_time.id_for_label }}">{{ form.preferred_time.label }}</label>
+      {{ form.preferred_time }}
+      {% for err in form.preferred_time.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+    <div class="col-12">
+      <label class="form-label" for="{{ form.message.id_for_label }}">{{ form.message.label }}</label>
+      {{ form.message }}
+      {% for err in form.message.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+    </div>
+    <div class="col-12 d-flex gap-2 flex-wrap">
+      <button class="btn btn-primary" type="submit">
+        {% if active_language == 'ar' %}إرسال الطلب{% else %}Submit Request{% endif %}
+      </button>
+      <a class="btn btn-outline-secondary" href="{% url 'core:home' %}">
+        {% if active_language == 'ar' %}العودة للرئيسية{% else %}Back to Home{% endif %}
+      </a>
+    </div>
+  </form>
+</section>
+{% endblock %}

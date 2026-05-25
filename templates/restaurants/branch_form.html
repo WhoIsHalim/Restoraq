@@ -1,0 +1,33 @@
+{% extends "app/base_app.html" %}
+{% block title %}
+{% if object %}
+  {% if active_language == 'ar' %}تعديل فرع{% else %}Edit Branch{% endif %}
+{% else %}
+  {% if active_language == 'ar' %}إضافة فرع{% else %}Add Branch{% endif %}
+{% endif %}
+{% endblock %}
+{% block app_title %}
+{% if object %}
+  {% if active_language == 'ar' %}تعديل بيانات الفرع{% else %}Edit Branch{% endif %}
+{% else %}
+  {% if active_language == 'ar' %}إضافة فرع جديد{% else %}Create New Branch{% endif %}
+{% endif %}
+{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}إدارة بيانات الفرع داخل المطعم الحالي{% else %}Manage branch data for the current tenant{% endif %}{% endblock %}
+{% block content %}
+<div class="panel p-4">
+  <form method="post" class="row g-3">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="col-md-6"><label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>{{ form.name }}</div>
+    <div class="col-md-6"><label class="form-label" for="{{ form.code.id_for_label }}">{{ form.code.label }}</label>{{ form.code }}</div>
+    <div class="col-md-6"><label class="form-label" for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>{{ form.phone }}</div>
+    <div class="col-md-6 d-flex align-items-end"><div class="form-check">{{ form.is_active }}<label class="form-check-label" for="{{ form.is_active.id_for_label }}">{{ form.is_active.label }}</label></div></div>
+    <div class="col-12"><label class="form-label" for="{{ form.address.id_for_label }}">{{ form.address.label }}</label>{{ form.address }}</div>
+    <div class="col-12 d-flex gap-2">
+      <button class="btn btn-primary" type="submit">{% if active_language == 'ar' %}حفظ{% else %}Save{% endif %}</button>
+      <a href="{% url 'restaurants:branches' %}" class="btn btn-outline-secondary">{% if active_language == 'ar' %}إلغاء{% else %}Cancel{% endif %}</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

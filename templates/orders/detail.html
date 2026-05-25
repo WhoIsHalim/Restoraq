@@ -1,0 +1,119 @@
+{% extends "app/base_app.html" %}
+
+{% block title %}{% if active_language == 'ar' %}تفاصيل الطلب{% else %}Order Details{% endif %}{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}تفاصيل الطلب {{ order.order_number }}{% else %}Order {{ order.order_number }} Details{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}عرض تفاصيل المنتجات والمدفوعات وحالة الطلب{% else %}Products, payments, and status details{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="panel p-3">
+      <h5 class="mb-3">{% if active_language == 'ar' %}المنتجات{% else %}Items{% endif %}</h5>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>{% if active_language == 'ar' %}الصنف{% else %}Product{% endif %}</th>
+              <th>{% if active_language == 'ar' %}الكمية{% else %}Qty{% endif %}</th>
+              <th>{% if active_language == 'ar' %}سعر الوحدة{% else %}Unit Price{% endif %}</th>
+              <th>{% if active_language == 'ar' %}الإجمالي{% else %}Line Total{% endif %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in order.items.all %}
+            <tr>
+              <td>{{ item.name_snapshot }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>{{ item.unit_price }}</td>
+              <td>{{ item.line_total }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-center text-muted py-4">{% if active_language == 'ar' %}لا توجد عناصر{% else %}No items{% endif %}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="panel p-3 mb-3">
+      <h5 class="mb-3">{% if active_language == 'ar' %}ملخص الطلب{% else %}Order Summary{% endif %}</h5>
+      <div class="d-flex justify-content-between mb-2">
+        <span>{% if active_language == 'ar' %}نوع الطلب{% else %}Order Type{% endif %}</span>
+        <strong>
+          {% if order.order_type == 'delivery' %}
+            {% if active_language == 'ar' %}دليفري{% else %}Delivery{% endif %}
+          {% elif order.order_type == 'takeaway' %}
+            {% if active_language == 'ar' %}تيكاوي{% else %}Takeaway{% endif %}
+          {% else %}
+            {% if active_language == 'ar' %}صالة{% else %}Dine In{% endif %}
+          {% endif %}
+        </strong>
+      </div>
+      <div class="d-flex justify-content-between mb-2">
+        <span>{% if active_language == 'ar' %}الحالة{% else %}Status{% endif %}</span>
+        <strong>
+          {% if order.status == 'confirmed' %}
+            {% if active_language == 'ar' %}مؤكد{% else %}Confirmed{% endif %}
+          {% elif order.status == 'cancelled' %}
+            {% if active_language == 'ar' %}ملغي{% else %}Cancelled{% endif %}
+          {% else %}
+            {% if active_language == 'ar' %}مسودة{% else %}Draft{% endif %}
+          {% endif %}
+        </strong>
+      </div>
+      <div class="d-flex justify-content-between mb-2">
+        <span>{% if active_language == 'ar' %}حالة المطبخ{% else %}Kitchen{% endif %}</span>
+        <strong>
+          {% if order.kitchen_status == 'ready' %}
+            {% if active_language == 'ar' %}جاهز{% else %}Ready{% endif %}
+          {% elif order.kitchen_status == 'preparing' %}
+            {% if active_language == 'ar' %}قيد التحضير{% else %}Preparing{% endif %}
+          {% else %}
+            {% if active_language == 'ar' %}بانتظار التحضير{% else %}Pending{% endif %}
+          {% endif %}
+        </strong>
+      </div>
+      <div class="d-flex justify-content-between mb-2"><span>{% if active_language == 'ar' %}الفرع{% else %}Branch{% endif %}</span><strong>{{ order.branch|default:"-" }}</strong></div>
+      <div class="d-flex justify-content-between mb-2"><span>{% if active_language == 'ar' %}الإجمالي{% else %}Total{% endif %}</span><strong>{{ order.total_amount }}</strong></div>
+      <div class="d-flex justify-content-between"><span>{% if active_language == 'ar' %}وقت الإنشاء{% else %}Created{% endif %}</span><strong>{{ order.created_at|date:"Y-m-d H:i" }}</strong></div>
+      {% if order.order_type == 'delivery' %}
+      <hr>
+      <div class="small">
+        <div><strong>{% if active_language == 'ar' %}العميل{% else %}Customer{% endif %}:</strong> {{ order.customer_name_snapshot|default:"-" }}</div>
+        <div><strong>{% if active_language == 'ar' %}الهاتف{% else %}Phone{% endif %}:</strong> {{ order.customer_phone_snapshot|default:"-" }}</div>
+        <div><strong>{% if active_language == 'ar' %}العنوان{% else %}Address{% endif %}:</strong> {{ order.customer_address_snapshot|default:"-" }}</div>
+      </div>
+      {% endif %}
+    </div>
+    <div class="panel p-3">
+      <h6 class="mb-2">{% if active_language == 'ar' %}المدفوعات{% else %}Payments{% endif %}</h6>
+      <ul class="list-group list-group-flush">
+        {% for payment in order.payments.all %}
+        <li class="list-group-item px-0 d-flex justify-content-between">
+          <span>
+            {% if payment.method == 'cash' %}{% if active_language == 'ar' %}نقدي{% else %}Cash{% endif %}
+            {% elif payment.method == 'wallet' %}{% if active_language == 'ar' %}محفظة{% else %}Wallet{% endif %}
+            {% elif payment.method == 'card' %}{% if active_language == 'ar' %}بطاقة{% else %}Card{% endif %}
+            {% else %}{% if active_language == 'ar' %}أخرى{% else %}Other{% endif %}{% endif %}
+            (
+            {% if payment.status == 'captured' %}{% if active_language == 'ar' %}تم التحصيل{% else %}Captured{% endif %}
+            {% elif payment.status == 'captured_unverified' %}{% if active_language == 'ar' %}تم التحصيل - قيد المراجعة{% else %}Captured - Unverified{% endif %}
+            {% elif payment.status == 'failed' %}{% if active_language == 'ar' %}فشل{% else %}Failed{% endif %}
+            {% else %}{% if active_language == 'ar' %}مسترد{% else %}Refunded{% endif %}{% endif %}
+            )
+          </span>
+          <strong>{{ payment.amount }}</strong>
+        </li>
+        {% empty %}
+        <li class="list-group-item px-0 text-muted">{% if active_language == 'ar' %}لا توجد مدفوعات{% else %}No payments{% endif %}</li>
+        {% endfor %}
+      </ul>
+      <div class="mt-3 d-flex gap-2">
+        <a class="btn btn-outline-primary btn-sm" href="{% url 'orders:edit' order.id %}">{% if active_language == 'ar' %}تعديل الطلب{% else %}Edit Order{% endif %}</a>
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'orders:list' %}">{% if active_language == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

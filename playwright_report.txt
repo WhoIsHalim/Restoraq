@@ -1,0 +1,28 @@
+Playwright UI smoke report
+==========================
+
+Checks:
+- Public /: PASS
+- Public /features/: PASS
+- Public /pricing/: PASS
+- SystemOwner login: PASS
+- System dashboard: PASS
+- System add restaurant: PASS
+- Owner login: PASS
+- Owner /dashboard/: PASS
+- Owner /orders/: PASS
+- Owner /menu/products/: PASS
+- Owner /inventory/ingredients/: PASS
+- Owner /hr/employees/: PASS
+- Owner /reports/: PASS
+- Owner /restaurants/branches/: PASS
+- Cashier login: PASS
+- Kitchen login: PASS
+- Inventory login: PASS
+- Inventory /inventory/ingredients/: PASS
+- Inventory /inventory/stock/: PASS
+- Accountant login: PASS
+- Accountant /reports/: PASS
+- Accountant /reports/accounting/: PASS
+
+Errors: none

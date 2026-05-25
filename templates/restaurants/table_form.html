@@ -1,0 +1,24 @@
+{% extends "app/base_app.html" %}
+{% block title %}{% if object %}{% if active_language == 'ar' %}تعديل طاولة{% else %}Edit Table{% endif %}{% else %}{% if active_language == 'ar' %}إضافة طاولة{% else %}Add Table{% endif %}{% endif %}{% endblock %}
+{% block app_title %}{% if object %}{% if active_language == 'ar' %}تعديل الطاولة{% else %}Edit Dining Table{% endif %}{% else %}{% if active_language == 'ar' %}طاولة جديدة{% else %}New Table{% endif %}{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}تحديد السعة وربط الطاولة بمنطقة{% else %}Set capacity and link the table to an area{% endif %}{% endblock %}
+
+{% block content %}
+<div class="panel p-4">
+  <form method="post" class="row g-3">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="col-md-4"><label class="form-label" for="{{ form.branch.id_for_label }}">{{ form.branch.label }}</label>{{ form.branch }}</div>
+    <div class="col-md-4"><label class="form-label" for="{{ form.area.id_for_label }}">{{ form.area.label }}</label>{{ form.area }}</div>
+    <div class="col-md-4"><label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>{{ form.name }}</div>
+    <div class="col-md-4"><label class="form-label" for="{{ form.capacity.id_for_label }}">{{ form.capacity.label }}</label>{{ form.capacity }}</div>
+    <div class="col-12">
+      <div class="form-check">{{ form.is_active }}<label class="form-check-label" for="{{ form.is_active.id_for_label }}">{{ form.is_active.label }}</label></div>
+    </div>
+    <div class="col-12 d-flex gap-2">
+      <button class="btn btn-primary" type="submit">{% if active_language == 'ar' %}حفظ{% else %}Save{% endif %}</button>
+      <a class="btn btn-outline-secondary" href="{% url 'restaurants:tables' %}">{% if active_language == 'ar' %}إلغاء{% else %}Cancel{% endif %}</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

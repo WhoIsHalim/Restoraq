@@ -1,0 +1,32 @@
+{% extends "app/base_app.html" %}
+{% block title %}
+{% if object %}
+  {% if active_language == 'ar' %}تعديل تصنيف{% else %}Edit Category{% endif %}
+{% else %}
+  {% if active_language == 'ar' %}إضافة تصنيف{% else %}Add Category{% endif %}
+{% endif %}
+{% endblock %}
+{% block app_title %}
+{% if object %}
+  {% if active_language == 'ar' %}تعديل تصنيف المنيو{% else %}Edit Menu Category{% endif %}
+{% else %}
+  {% if active_language == 'ar' %}إضافة تصنيف منيو{% else %}Create Menu Category{% endif %}
+{% endif %}
+{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}اختيار الفرع وترتيب الظهور{% else %}Select branch and display ordering{% endif %}{% endblock %}
+{% block content %}
+<div class="panel p-4">
+  <form method="post" class="row g-3">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="col-md-6"><label class="form-label" for="{{ form.branch.id_for_label }}">{{ form.branch.label }}</label>{{ form.branch }}</div>
+    <div class="col-md-6"><label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>{{ form.name }}</div>
+    <div class="col-md-6"><label class="form-label" for="{{ form.display_order.id_for_label }}">{{ form.display_order.label }}</label>{{ form.display_order }}</div>
+    <div class="col-md-6 d-flex align-items-end"><div class="form-check">{{ form.is_active }}<label class="form-check-label" for="{{ form.is_active.id_for_label }}">{{ form.is_active.label }}</label></div></div>
+    <div class="col-12 d-flex gap-2">
+      <button class="btn btn-primary" type="submit">{% if active_language == 'ar' %}حفظ{% else %}Save{% endif %}</button>
+      <a class="btn btn-outline-secondary" href="{% url 'menu:categories' %}">{% if active_language == 'ar' %}إلغاء{% else %}Cancel{% endif %}</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% load i18n %}
+{% if cl.search_fields %}
+<div id="toolbar" class="admin-toolbar">
+  <h2 id="changelist-search-form" class="visually-hidden">
+    {% if LANGUAGE_CODE|slice:':2' == 'ar' %}بحث{% else %}{% blocktranslate with name=cl.opts.verbose_name_plural %}Search {{ name }}{% endblocktranslate %}{% endif %}
+  </h2>
+  <form id="changelist-search" method="get" role="search" aria-labelledby="changelist-search-form" class="admin-search-form">
+    <div class="input-group input-group-sm">
+      <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+      <input class="form-control" type="text" name="q" value="{{ cl.query }}" id="searchbar" autofocus placeholder="{% if LANGUAGE_CODE|slice:':2' == 'ar' %}بحث داخل النتائج{% else %}Search{% endif %}">
+      <button class="btn btn-primary" type="submit">{% if LANGUAGE_CODE|slice:':2' == 'ar' %}بحث{% else %}{% translate 'Search' %}{% endif %}</button>
+    </div>
+    {% if show_result_count %}
+    <div class="admin-search-meta">
+      {% blocktranslate count counter=cl.result_count %}{{ counter }} result{% plural %}{{ counter }} results{% endblocktranslate %}
+      (<a href="{% url 'admin:app_list' cl.opts.app_label %}">{% blocktranslate with cl.opts.verbose_name_plural as name %}{{ name }}{% endblocktranslate %}</a>)
+    </div>
+    {% endif %}
+    {% for pair in cl.params.items %}
+      {% if pair.0 != 'q' %}<input type="hidden" name="{{ pair.0 }}" value="{{ pair.1 }}">{% endif %}
+    {% endfor %}
+  </form>
+</div>
+{% endif %}

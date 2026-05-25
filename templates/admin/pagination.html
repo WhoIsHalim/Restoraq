@@ -1,0 +1,37 @@
+{% load i18n admin_list admin_pagination %}
+<nav class="admin-pagination" aria-labelledby="pagination">
+  <h2 id="pagination" class="visually-hidden">{% blocktranslate with name=cl.opts.verbose_name_plural %}Pagination {{ name }}{% endblocktranslate %}</h2>
+
+  <div class="admin-pagination-meta">
+    {{ cl.result_count }} {% if cl.result_count == 1 %}{{ cl.opts.verbose_name }}{% else %}{{ cl.opts.verbose_name_plural }}{% endif %}
+    {% if show_all_url %}
+      <a href="{{ show_all_url }}" class="admin-pagination-link">{% translate 'Show all' %}</a>
+    {% endif %}
+  </div>
+
+  {% if pagination_required %}
+    <div class="admin-pagination-controls">
+      <ul class="admin-pagination-list">
+        {% with current=cl.page_num last=cl.paginator.num_pages %}
+          {% for i in page_range %}
+            <li class="page-item">{% paginator_number cl i %}</li>
+          {% endfor %}
+
+          {% with jump=current|add:"10" %}
+            {% if jump < last %}
+              <li class="page-item">
+                <a class="page-link page-jump" href="{% admin_page_url cl jump %}">+10</a>
+              </li>
+            {% endif %}
+          {% endwith %}
+
+          <li class="page-item">
+            <a class="page-link page-last" href="{% admin_page_url cl last %}">
+              {% if LANGUAGE_CODE|slice:":2" == "ar" %}آخر صفحة{% else %}Last page{% endif %}
+            </a>
+          </li>
+        {% endwith %}
+      </ul>
+    </div>
+  {% endif %}
+</nav>

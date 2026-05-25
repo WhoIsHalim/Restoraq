@@ -1,0 +1,65 @@
+{% extends "app/base_app.html" %}
+
+{% block title %}{% if active_language == 'ar' %}الموارد البشرية{% else %}Human Resources{% endif %}{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}قائمة الموظفين{% else %}Employees{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}إدارة فريق العمل لكل فرع{% else %}Manage staff per branch{% endif %}{% endblock %}
+
+{% block content %}
+<div class="panel p-3 mb-3 d-flex justify-content-between align-items-center">
+  <h5 class="mb-0">{% if active_language == 'ar' %}الموظفون{% else %}Employees{% endif %}</h5>
+  {% if can_write %}
+  <a href="{% url 'hr:employee-create' %}" class="btn btn-primary">
+    {% if active_language == 'ar' %}إضافة موظف{% else %}Add Employee{% endif %}
+  </a>
+  {% endif %}
+</div>
+
+<div class="panel p-3">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>{% if active_language == 'ar' %}الاسم{% else %}Name{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الفرع{% else %}Branch{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الوظيفة{% else %}Position{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الراتب{% else %}Salary{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+          {% if can_write %}
+          <th>{% if active_language == 'ar' %}إجراءات{% else %}Actions{% endif %}</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for employee in employees %}
+        <tr>
+          <td class="fw-semibold">{{ employee.full_name }}</td>
+          <td>{{ employee.branch|default:"-" }}</td>
+          <td>{{ employee.position }}</td>
+          <td>{{ employee.salary }}</td>
+          <td>
+            {% if employee.is_active %}
+            <span class="status-pill status-green">{% if active_language == 'ar' %}نشط{% else %}Active{% endif %}</span>
+            {% else %}
+            <span class="status-pill status-gray">{% if active_language == 'ar' %}غير نشط{% else %}Inactive{% endif %}</span>
+            {% endif %}
+          </td>
+          {% if can_write %}
+          <td>
+            <a href="{% url 'hr:employee-edit' employee.id %}" class="btn btn-sm btn-outline-primary">
+              {% if active_language == 'ar' %}تعديل{% else %}Edit{% endif %}
+            </a>
+          </td>
+          {% endif %}
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="{% if can_write %}6{% else %}5{% endif %}" class="text-center text-muted py-4">
+            {% if active_language == 'ar' %}لا يوجد موظفون{% else %}No employees{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

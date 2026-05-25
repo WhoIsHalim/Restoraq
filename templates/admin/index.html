@@ -1,0 +1,92 @@
+﻿{% extends "admin/base_site.html" %}
+{% load static log admin_stats %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block nav-breadcrumbs %}{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+
+{% block content %}
+<section class="admin-hero">
+  <div>
+    <h1>
+      {% if LANGUAGE_CODE|slice:":2" == "ar" %}
+      مركز تحكم مدير النظام
+      {% else %}
+      System Owner Control Center
+      {% endif %}
+    </h1>
+    <p>
+      {% if LANGUAGE_CODE|slice:":2" == "ar" %}
+      إدارة بيانات المنصة، محتوى الموقع، الاشتراكات، وسجل العمليات.
+      {% else %}
+      Manage platform data, website content, subscriptions, and operational logs.
+      {% endif %}
+    </p>
+  </div>
+  <div class="admin-hero-actions">
+    <a class="btn btn-primary" href="{% url 'system:dashboard' %}">{% if LANGUAGE_CODE|slice:":2" == "ar" %}لوحة السيستم{% else %}System Dashboard{% endif %}</a>
+    <a class="btn btn-outline-primary" href="{% url 'system:tenant-create' %}">{% if LANGUAGE_CODE|slice:":2" == "ar" %}إضافة مطعم{% else %}Add Restaurant{% endif %}</a>
+    <a class="btn btn-outline-secondary" href="{% url 'system:site-content' %}">{% if LANGUAGE_CODE|slice:":2" == "ar" %}محتوى الموقع{% else %}Website Content{% endif %}</a>
+    <a class="btn btn-outline-secondary" href="{% url 'system:support-tickets' %}">{% if LANGUAGE_CODE|slice:":2" == "ar" %}تذاكر الدعم{% else %}Support Tickets{% endif %}</a>
+  </div>
+</section>
+
+<section class="admin-stats">
+  <div class="admin-stat-card">
+    <div class="admin-stat-title">{% if LANGUAGE_CODE|slice:":2" == "ar" %}إجمالي المطاعم{% else %}Total Tenants{% endif %}</div>
+    <div class="admin-stat-value">{% admin_metric "tenants_total" %}</div>
+  </div>
+  <div class="admin-stat-card">
+    <div class="admin-stat-title">{% if LANGUAGE_CODE|slice:":2" == "ar" %}مطاعم نشطة{% else %}Active Tenants{% endif %}</div>
+    <div class="admin-stat-value">{% admin_metric "tenants_active" %}</div>
+  </div>
+  <div class="admin-stat-card">
+    <div class="admin-stat-title">{% if LANGUAGE_CODE|slice:":2" == "ar" %}اشتراكات نشطة{% else %}Active Subscriptions{% endif %}</div>
+    <div class="admin-stat-value">{% admin_metric "subscriptions_active" %}</div>
+  </div>
+  <div class="admin-stat-card">
+    <div class="admin-stat-title">{% if LANGUAGE_CODE|slice:":2" == "ar" %}طلبات اليوم{% else %}Orders Today{% endif %}</div>
+    <div class="admin-stat-value">{% admin_metric "orders_today" %}</div>
+  </div>
+  <div class="admin-stat-card">
+    <div class="admin-stat-title">{% if LANGUAGE_CODE|slice:":2" == "ar" %}صفحات الموقع{% else %}CMS Pages{% endif %}</div>
+    <div class="admin-stat-value">{% admin_metric "cms_pages" %}</div>
+  </div>
+  <div class="admin-stat-card">
+    <div class="admin-stat-title">{% if LANGUAGE_CODE|slice:":2" == "ar" %}تنبيهات النسخ الاحتياطي{% else %}Backup Alerts{% endif %}</div>
+    <div class="admin-stat-value">{% admin_metric "backups_failed_24h" %}</div>
+  </div>
+</section>
+
+<div class="admin-dashboard-grid">
+  <div class="admin-dashboard-main">
+    <div id="content-main" class="app-list">
+      {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
+    </div>
+  </div>
+  <aside class="admin-dashboard-side">
+    <div class="module" id="recent-actions-module">
+      <h2>{% if LANGUAGE_CODE|slice:":2" == "ar" %}آخر العمليات{% else %}Recent Actions{% endif %}</h2>
+      {% get_admin_log 12 as admin_log for_user user %}
+      {% if not admin_log %}
+      <p>{% if LANGUAGE_CODE|slice:":2" == "ar" %}لا توجد عمليات حديثة{% else %}No recent actions{% endif %}</p>
+      {% else %}
+      <ul class="actionlist">
+        {% for entry in admin_log %}
+        <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
+          {% if entry.is_deletion or not entry.get_admin_url %}
+            {{ entry.object_repr }}
+          {% else %}
+            <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </aside>
+</div>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}

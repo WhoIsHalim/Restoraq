@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if active_language == 'ar' %}الصفحة غير موجودة{% else %}Page Not Found{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row align-items-center g-4">
+  <div class="col-lg-6">
+    <div class="panel p-4">
+      <span class="hero-slide-kicker">{% if active_language == 'ar' %}خطأ 404{% else %}Error 404{% endif %}</span>
+      <h1 class="hero-slide-title mt-2">
+        {% if active_language == 'ar' %}
+        الصفحة التي تبحث عنها غير موجودة
+        {% else %}
+        We couldn't find that page
+        {% endif %}
+      </h1>
+      <p class="hero-slide-subtitle">
+        {% if active_language == 'ar' %}
+        ربما تم حذف الصفحة أو تم تغيير الرابط. يمكنك العودة للرئيسية أو تسجيل الدخول لمساحة العمل.
+        {% else %}
+        The page may have been moved or deleted. Head back to the homepage or login to your workspace.
+        {% endif %}
+      </p>
+      <div class="d-flex flex-wrap gap-2 mt-4">
+        <a class="btn btn-primary" href="{% url 'core:home' %}">
+          {% if active_language == 'ar' %}العودة للرئيسية{% else %}Back to Home{% endif %}
+        </a>
+        <a class="btn btn-outline-secondary" href="{% url 'accounts:login' %}">
+          {% if active_language == 'ar' %}تسجيل الدخول{% else %}Login{% endif %}
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="hero-slide-media">
+      <img src="{% static 'img/undraw_rocket.svg' %}" alt="Not Found">
+    </div>
+  </div>
+</div>
+{% endblock %}

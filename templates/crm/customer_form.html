@@ -1,0 +1,24 @@
+{% extends "app/base_app.html" %}
+{% block title %}{% if object %}{% if active_language == 'ar' %}تعديل عميل{% else %}Edit Customer{% endif %}{% else %}{% if active_language == 'ar' %}إضافة عميل{% else %}Add Customer{% endif %}{% endif %}{% endblock %}
+{% block app_title %}{% if object %}{% if active_language == 'ar' %}تعديل بيانات العميل{% else %}Edit Customer{% endif %}{% else %}{% if active_language == 'ar' %}عميل جديد{% else %}New Customer{% endif %}{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}إدارة معلومات العميل وربطها بالطلبات{% else %}Manage customer profile and order linkage{% endif %}{% endblock %}
+
+{% block content %}
+<div class="panel p-4">
+  <form method="post" class="row g-3">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="col-md-4"><label class="form-label" for="{{ form.branch.id_for_label }}">{{ form.branch.label }}</label>{{ form.branch }}</div>
+    <div class="col-md-4"><label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>{{ form.name }}</div>
+    <div class="col-md-4"><label class="form-label" for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>{{ form.phone }}</div>
+    <div class="col-md-4"><label class="form-label" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>{{ form.email }}</div>
+    <div class="col-md-4"><label class="form-label" for="{{ form.loyalty_points.id_for_label }}">{{ form.loyalty_points.label }}</label>{{ form.loyalty_points }}</div>
+    <div class="col-md-4 d-flex align-items-end"><div class="form-check">{{ form.is_active }}<label class="form-check-label" for="{{ form.is_active.id_for_label }}">{{ form.is_active.label }}</label></div></div>
+    <div class="col-12"><label class="form-label" for="{{ form.notes.id_for_label }}">{{ form.notes.label }}</label>{{ form.notes }}</div>
+    <div class="col-12 d-flex gap-2">
+      <button class="btn btn-primary" type="submit">{% if active_language == 'ar' %}حفظ{% else %}Save{% endif %}</button>
+      <a class="btn btn-outline-secondary" href="{% url 'crm:customers' %}">{% if active_language == 'ar' %}إلغاء{% else %}Cancel{% endif %}</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

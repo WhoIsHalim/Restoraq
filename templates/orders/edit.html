@@ -1,0 +1,54 @@
+{% extends "app/base_app.html" %}
+
+{% block title %}{% if active_language == 'ar' %}تعديل الطلب{% else %}Edit Order{% endif %}{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}تعديل الطلب {{ object.order_number }}{% else %}Edit Order {{ object.order_number }}{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}تعديل الحالة والملاحظات وكميات الأصناف{% else %}Edit status, notes, and item quantities{% endif %}{% endblock %}
+
+{% block content %}
+<div class="panel p-4">
+  <form method="post" class="row g-3">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="col-md-4">
+      <label class="form-label" for="{{ form.status.id_for_label }}">{{ form.status.label }}</label>
+      {{ form.status }}
+    </div>
+    <div class="col-md-8">
+      <label class="form-label" for="{{ form.notes.id_for_label }}">{{ form.notes.label }}</label>
+      {{ form.notes }}
+    </div>
+
+    <div class="col-12">
+      <h6 class="mb-2">{% if active_language == 'ar' %}عناصر الطلب{% else %}Order Items{% endif %}</h6>
+      {{ item_formset.management_form }}
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead>
+            <tr>
+              <th>{% if active_language == 'ar' %}الصنف{% else %}Item{% endif %}</th>
+              <th>{% if active_language == 'ar' %}الكمية{% else %}Qty{% endif %}</th>
+              <th>{% if active_language == 'ar' %}ملاحظات{% else %}Notes{% endif %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for f in item_formset %}
+            <tr>
+              <td>
+                {{ f.instance.name_snapshot }}
+                {{ f.id }}
+              </td>
+              <td>{{ f.quantity }}</td>
+              <td>{{ f.notes }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="col-12 d-flex gap-2">
+      <button class="btn btn-primary" type="submit">{% if active_language == 'ar' %}حفظ التعديلات{% else %}Save Changes{% endif %}</button>
+      <a class="btn btn-outline-secondary" href="{% url 'orders:detail' object.id %}">{% if active_language == 'ar' %}إلغاء{% else %}Cancel{% endif %}</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

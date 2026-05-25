@@ -1,0 +1,57 @@
+{% extends "app/base_app.html" %}
+{% block title %}{% if active_language == 'ar' %}العملاء{% else %}Customers{% endif %}{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}سجل العملاء{% else %}Customers Directory{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}إدارة بيانات العملاء ومتابعة طلباتهم{% else %}Manage customers and track their orders{% endif %}{% endblock %}
+
+{% block content %}
+<div class="panel p-3 mb-3">
+  <form method="get" class="row g-2 align-items-end">
+    <div class="col-md-7 col-lg-6">
+      <label class="form-label">{% if active_language == 'ar' %}بحث بالاسم أو رقم الهاتف{% else %}Search by name or phone{% endif %}</label>
+      <input class="form-control" type="text" name="q" value="{{ q }}">
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-outline-primary" type="submit">{% if active_language == 'ar' %}بحث{% else %}Search{% endif %}</button>
+    </div>
+    {% if can_write %}
+    <div class="col-auto ms-auto">
+      <a class="btn btn-primary" href="{% url 'crm:customer-create' %}">{% if active_language == 'ar' %}إضافة عميل{% else %}Add Customer{% endif %}</a>
+    </div>
+    {% endif %}
+  </form>
+</div>
+
+<div class="panel p-3">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>{% if active_language == 'ar' %}الاسم{% else %}Name{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الهاتف{% else %}Phone{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الفرع{% else %}Branch{% endif %}</th>
+          <th>{% if active_language == 'ar' %}نقاط الولاء{% else %}Loyalty Points{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الإجراءات{% else %}Actions{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for customer in customers %}
+        <tr>
+          <td class="fw-semibold">{{ customer.name }}</td>
+          <td>{{ customer.phone|default:"-" }}</td>
+          <td>{{ customer.branch|default:"-" }}</td>
+          <td>{{ customer.loyalty_points }}</td>
+          <td class="d-flex gap-2 flex-wrap">
+            <a class="btn btn-sm btn-outline-primary" href="{% url 'crm:customer-detail' customer.id %}">{% if active_language == 'ar' %}عرض{% else %}View{% endif %}</a>
+            {% if can_write %}
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'crm:customer-edit' customer.id %}">{% if active_language == 'ar' %}تعديل{% else %}Edit{% endif %}</a>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="text-center text-muted py-4">{% if active_language == 'ar' %}لا يوجد عملاء{% else %}No customers{% endif %}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

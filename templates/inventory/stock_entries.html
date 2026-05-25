@@ -1,0 +1,46 @@
+{% extends "app/base_app.html" %}
+{% block title %}{% if active_language == 'ar' %}حركات المخزون{% else %}Stock Entries{% endif %}{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}حركات المخزون{% else %}Stock Movements{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}متابعة حركات الإدخال والصرف والتسوية{% else %}Track in/out/adjustment operations{% endif %}{% endblock %}
+{% block content %}
+<div class="panel p-3 mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+  <div>
+    <h5 class="mb-1">{% if active_language == 'ar' %}دفتر الحركات{% else %}Movement Ledger{% endif %}</h5>
+    <p class="text-muted mb-0">{% if active_language == 'ar' %}سجل حركات مخزون غير قابل للتعديل.{% else %}Immutable inventory movement history.{% endif %}</p>
+  </div>
+  {% if can_write %}
+  <a class="btn btn-primary" href="{% url 'inventory:stock-entry-create' %}">{% if active_language == 'ar' %}تسجيل حركة{% else %}Record Entry{% endif %}</a>
+  {% endif %}
+</div>
+
+<div class="panel p-3">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>{% if active_language == 'ar' %}المكون{% else %}Ingredient{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الفرع{% else %}Branch{% endif %}</th>
+          <th>{% if active_language == 'ar' %}النوع{% else %}Type{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الكمية{% else %}Quantity{% endif %}</th>
+          <th>{% if active_language == 'ar' %}المرجع{% else %}Reference{% endif %}</th>
+          <th>{% if active_language == 'ar' %}التاريخ{% else %}Created{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for row in entries %}
+        <tr>
+          <td class="fw-semibold">{{ row.ingredient }}</td>
+          <td>{{ row.branch|default:"-" }}</td>
+          <td><code>{{ row.movement_type }}</code></td>
+          <td>{{ row.quantity }}</td>
+          <td>{{ row.reference|default:"-" }}</td>
+          <td>{{ row.created_at|date:"Y-m-d H:i" }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="text-center text-muted py-4">{% if active_language == 'ar' %}لا توجد حركات مخزون{% else %}No stock entries yet{% endif %}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

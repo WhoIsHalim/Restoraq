@@ -1,0 +1,26 @@
+{% extends "app/base_app.html" %}
+{% block title %}{% if object %}{% if active_language == 'ar' %}تعديل حجز{% else %}Edit Reservation{% endif %}{% else %}{% if active_language == 'ar' %}إضافة حجز{% else %}Add Reservation{% endif %}{% endif %}{% endblock %}
+{% block app_title %}{% if object %}{% if active_language == 'ar' %}تعديل الحجز{% else %}Edit Reservation{% endif %}{% else %}{% if active_language == 'ar' %}حجز جديد{% else %}New Reservation{% endif %}{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}إدارة بيانات الحجز وتفاصيل الطاولة{% else %}Manage reservation details and seating{% endif %}{% endblock %}
+
+{% block content %}
+<div class="panel p-4">
+  <form method="post" class="row g-3">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="col-md-4"><label class="form-label" for="{{ form.branch.id_for_label }}">{{ form.branch.label }}</label>{{ form.branch }}</div>
+    <div class="col-md-4"><label class="form-label" for="{{ form.table.id_for_label }}">{{ form.table.label }}</label>{{ form.table }}</div>
+    <div class="col-md-4"><label class="form-label" for="{{ form.customer_name.id_for_label }}">{{ form.customer_name.label }}</label>{{ form.customer_name }}</div>
+    <div class="col-md-4"><label class="form-label" for="{{ form.customer_phone.id_for_label }}">{{ form.customer_phone.label }}</label>{{ form.customer_phone }}</div>
+    <div class="col-md-4"><label class="form-label" for="{{ form.reservation_time.id_for_label }}">{{ form.reservation_time.label }}</label>{{ form.reservation_time }}</div>
+    <div class="col-md-4"><label class="form-label" for="{{ form.party_size.id_for_label }}">{{ form.party_size.label }}</label>{{ form.party_size }}</div>
+    <div class="col-md-4"><label class="form-label" for="{{ form.status.id_for_label }}">{{ form.status.label }}</label>{{ form.status }}</div>
+    <div class="col-md-4"><label class="form-label" for="{{ form.source.id_for_label }}">{{ form.source.label }}</label>{{ form.source }}</div>
+    <div class="col-12"><label class="form-label" for="{{ form.notes.id_for_label }}">{{ form.notes.label }}</label>{{ form.notes }}</div>
+    <div class="col-12 d-flex gap-2">
+      <button class="btn btn-primary" type="submit">{% if active_language == 'ar' %}حفظ{% else %}Save{% endif %}</button>
+      <a class="btn btn-outline-secondary" href="{% url 'restaurants:reservations' %}">{% if active_language == 'ar' %}إلغاء{% else %}Cancel{% endif %}</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

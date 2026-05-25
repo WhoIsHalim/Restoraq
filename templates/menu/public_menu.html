@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if active_language == 'ar' %}منيو {{ tenant.name }}{% else %}{{ tenant.name }} Menu{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="panel p-4">
+      <h2 class="mb-2">{{ tenant.name }}</h2>
+      <p class="text-muted mb-3">{% if active_language == 'ar' %}منيو رقمي محدث باستمرار{% else %}Live digital menu{% endif %}</p>
+      <div class="d-flex flex-wrap gap-2 mb-3">
+        {% if branch %}
+          <span class="status-pill status-green">{% if active_language == 'ar' %}فرع{% else %}Branch{% endif %}: {{ branch.name }}</span>
+        {% else %}
+          <span class="status-pill status-gray">{% if active_language == 'ar' %}كل الفروع{% else %}All branches{% endif %}</span>
+        {% endif %}
+      </div>
+      <div class="d-flex flex-wrap gap-2">
+        {% for category in categories %}
+          <a class="btn btn-sm btn-outline-primary" href="#cat-{{ category.id }}">{{ category.name }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    {% for category in categories %}
+      <div id="cat-{{ category.id }}" class="panel p-4 mb-3">
+        <h4 class="mb-3">{{ category.name }}</h4>
+        <div class="row g-3">
+          {% for product in products %}
+            {% if product.category_id == category.id %}
+            <div class="col-md-6">
+              <div class="d-flex gap-3 align-items-center border rounded-3 p-3 h-100">
+                {% if product.image %}
+                <img src="{{ product.image }}" alt="" class="rounded" style="width: 72px; height: 72px; object-fit: cover;">
+                {% else %}
+                <div class="rounded bg-light border d-flex align-items-center justify-content-center" style="width: 72px; height: 72px;">
+                  <i class="fa-solid fa-utensils"></i>
+                </div>
+                {% endif %}
+                <div>
+                  <div class="fw-semibold">{{ product.name }}</div>
+                  <small class="text-muted">{{ product.price }} EGP</small>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

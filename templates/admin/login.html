@@ -1,0 +1,56 @@
+﻿{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}{% if form.errors %}{% translate "Error:" %} {% endif %}{{ block.super }}{% endblock %}
+
+{% block bodyclass %}{{ block.super }} admin-login{% endblock %}
+
+{% block usertools %}{% endblock %}
+{% block nav-global %}{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+{% block content_title %}{% endblock %}
+{% block nav-breadcrumbs %}{% endblock %}
+
+{% block content %}
+<section class="admin-login-shell">
+  <div class="admin-login-card">
+    <div class="admin-login-brand">
+      <div class="admin-login-logo">R</div>
+      <div>
+        <h1>{% if LANGUAGE_CODE|slice:":2" == "ar" %}لوحة إدارة Restoraq{% else %}Restoraq Admin{% endif %}</h1>
+        <p>{% if LANGUAGE_CODE|slice:":2" == "ar" %}سجل الدخول لإدارة المنصة والمحتوى.{% else %}Sign in to manage the platform and content.{% endif %}</p>
+      </div>
+    </div>
+
+    {% if form.errors and not form.non_field_errors %}
+      <div class="admin-alert admin-alert-danger">
+        {% blocktranslate count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktranslate %}
+      </div>
+    {% endif %}
+
+    {% if form.non_field_errors %}
+      <div class="admin-alert admin-alert-danger">
+        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="post" action="{{ app_path }}" id="login-form" class="admin-login-form">
+      {% csrf_token %}
+      <div class="form-row">
+        <label for="id_username">{% if LANGUAGE_CODE|slice:":2" == "ar" %}اسم المستخدم{% else %}Username{% endif %}</label>
+        {{ form.username }}
+      </div>
+      <div class="form-row">
+        <label for="id_password">{% if LANGUAGE_CODE|slice:":2" == "ar" %}كلمة المرور{% else %}Password{% endif %}</label>
+        {{ form.password }}
+      </div>
+      {% if form.errors %}
+      <p class="errornote">{% trans "Please correct the errors below." %}</p>
+      {% endif %}
+      <button type="submit" class="btn btn-primary w-100">
+        {% if LANGUAGE_CODE|slice:":2" == "ar" %}تسجيل الدخول{% else %}Sign In{% endif %}
+      </button>
+    </form>
+  </div>
+</section>
+{% endblock %}

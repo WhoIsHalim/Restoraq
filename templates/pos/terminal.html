@@ -1,0 +1,246 @@
+﻿{% extends "app/base_app.html" %}
+{% load static %}
+
+{% block title %}{% if active_language == 'ar' %}كاشير{% else %}Cashier{% endif %}{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}كاشير{% else %}Cashier{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}واجهة تشغيل الكاشير مع دعم أوضاع متعددة{% else %}Cashier interface with multi-order workflow{% endif %}{% endblock %}
+
+{% block content %}
+<div class="pos-screen" x-data="posTerminal('{% if active_language == 'ar' %}ar{% else %}en{% endif %}')" x-init="init()">
+  <template x-if="lastError">
+    <div class="alert alert-danger" x-text="lastError"></div>
+  </template>
+  <div class="row g-3">
+    <div class="col-lg-5">
+      <div class="panel p-3 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="m-0">{% if active_language == 'ar' %}قائمة المنتجات{% else %}Menu Catalog{% endif %}</h4>
+          <span
+            class="badge"
+            :class="online ? 'text-bg-success' : 'text-bg-warning'"
+            x-text="online ? '{% if active_language == 'ar' %}متصل{% else %}Online{% endif %}' : '{% if active_language == 'ar' %}بدون اتصال{% else %}Offline{% endif %}'"
+          ></span>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">{% if active_language == 'ar' %}الفرع التشغيلي{% else %}Operating Branch{% endif %}</label>
+          <select class="form-select" x-model="activeBranchId" @change="changeBranch(activeBranchId)" :disabled="branchLocked || branches.length <= 1">
+            <option value="" x-show="!branchLocked">{% if active_language == 'ar' %}اختر فرع{% else %}Select branch{% endif %}</option>
+            <template x-for="branch in branches" :key="branch.id">
+              <option :value="branch.id" x-text="branch.name"></option>
+            </template>
+          </select>
+          <small class="text-muted" x-show="branchLocked">{% if active_language == 'ar' %}هذا الحساب مرتبط بفرع محدد ولا يمكن تغييره.{% else %}This account is locked to a specific branch.{% endif %}</small>
+        </div>
+
+        <div class="mb-3">
+          <div class="d-flex flex-wrap gap-2">
+            <template x-for="category in categories" :key="category.id">
+              <button
+                type="button"
+                class="btn btn-outline-primary btn-sm"
+                :class="activeCategory === category.id ? 'active' : ''"
+                @click="activeCategory = category.id"
+                x-text="category.name"
+              ></button>
+            </template>
+          </div>
+        </div>
+
+        <div class="row g-2">
+          <template x-for="product in filteredProducts" :key="product.id">
+            <div class="col-md-6">
+              <button type="button" class="btn btn-light border w-100 text-start p-3" @click="addProduct(product)">
+                <div class="d-flex align-items-center gap-2">
+                  <img
+                    x-show="product.image"
+                    :src="product.image"
+                    alt=""
+                    class="img-fluid rounded"
+                    style="width: 56px; height: 56px; object-fit: cover;"
+                  />
+                  <div>
+                    <div class="fw-semibold" x-text="product.name"></div>
+                    <small x-text="product.price + ' EGP'"></small>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="panel p-3 mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <strong>{% if active_language == 'ar' %}طلبات مفتوحة{% else %}Current Orders{% endif %}</strong>
+            <p class="text-muted mb-0">{% if active_language == 'ar' %}يمكن فتح أكثر من طلب في نفس الوقت{% else %}Multiple carts stay open simultaneously{% endif %}</p>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-primary" @click="createNewOrder()">
+            {% if active_language == 'ar' %}+ طلب جديد{% else %}+ New Order{% endif %}
+          </button>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+          <template x-for="(order, index) in orders" :key="order.id">
+            <button
+              type="button"
+              class="btn btn-sm"
+              :class="activeOrderId === order.id ? 'btn-primary' : 'btn-outline-secondary'"
+              @click="selectOrder(order.id)"
+            >
+              <span x-text="'#' + (index + 1)"></span>
+              <small x-show="order.branch_id" class="ms-1">B<span x-text="order.branch_id"></span></small>
+              <small x-show="order.status === 'completed'">✓</small>
+            </button>
+          </template>
+        </div>
+      </div>
+
+      <div class="panel p-3 h-100" x-show="activeOrder">
+        <h5 class="mb-3">{% if active_language == 'ar' %}السلة{% else %}Cart{% endif %}</h5>
+        <div class="cart-list mb-3" style="max-height: 260px; overflow-y: auto;">
+          <template x-for="item in activeOrder.cart" :key="item.product_id">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div>
+                <strong x-text="item.name"></strong>
+                <div><small x-text="item.quantity + ' x ' + item.price"></small></div>
+              </div>
+              <div class="btn-group btn-group-sm">
+                <button type="button" class="btn btn-outline-secondary" @click="decrement(item)">-</button>
+                <button type="button" class="btn btn-outline-secondary" @click="increment(item)">+</button>
+              </div>
+            </div>
+          </template>
+          <template x-if="!activeOrder.cart.length">
+            <div class="text-muted text-center py-4">{% if active_language == 'ar' %}السلة فارغة{% else %}Cart is empty{% endif %}</div>
+          </template>
+        </div>
+        <div class="mb-2 d-flex justify-content-between"><span>{% if active_language == 'ar' %}الإجمالي قبل الضريبة{% else %}Subtotal{% endif %}</span><strong x-text="activeOrder.preview.subtotal"></strong></div>
+        <div class="mb-2 d-flex justify-content-between"><span>{% if active_language == 'ar' %}الضريبة{% else %}Tax{% endif %}</span><strong x-text="activeOrder.preview.tax"></strong></div>
+        <div class="mb-3 d-flex justify-content-between"><span>{% if active_language == 'ar' %}الإجمالي{% else %}Total{% endif %}</span><strong x-text="activeOrder.preview.total"></strong></div>
+        <div class="mb-2">
+          <label class="form-label mb-1">{% if active_language == 'ar' %}ملاحظات الطلب{% else %}Order Notes{% endif %}</label>
+          <textarea class="form-control form-control-sm" rows="2" x-model="activeOrder.notes" placeholder="{% if active_language == 'ar' %}مثال: بدون بصل / حساسية من الفول السوداني{% else %}Example: No onions / peanut allergy{% endif %}"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3">
+      <div class="panel p-3 h-100">
+        <h5 class="mb-3">{% if active_language == 'ar' %}الدفع{% else %}Payment{% endif %}</h5>
+        <div class="d-flex flex-column gap-2" x-show="activeOrder && activeOrder.cart.length && !activeOrder.checkoutReady">
+          <button class="btn btn-primary" type="button" @click="openPayment()">
+            {% if active_language == 'ar' %}تأكيد الطلب والانتقال للدفع{% else %}Confirm Order & Continue to Payment{% endif %}
+          </button>
+        </div>
+        <div class="d-flex flex-column gap-2" x-show="activeOrder && activeOrder.cart.length && activeOrder.checkoutReady">
+            <div class="mb-2">
+              <label class="form-label mb-1">{% if active_language == 'ar' %}نوع الطلب{% else %}Order Type{% endif %}</label>
+              <div class="btn-group w-100" role="group">
+                <button type="button" class="btn btn-sm" :class="activeOrder.orderType === 'dine_in' ? 'btn-primary' : 'btn-outline-primary'" @click="setOrderType(activeOrder, 'dine_in')">
+                  {% if active_language == 'ar' %}صالة{% else %}Dine In{% endif %}
+                </button>
+                <button type="button" class="btn btn-sm" :class="activeOrder.orderType === 'takeaway' ? 'btn-primary' : 'btn-outline-primary'" @click="setOrderType(activeOrder, 'takeaway')">
+                  {% if active_language == 'ar' %}تيكاوي{% else %}Takeaway{% endif %}
+                </button>
+                <button type="button" class="btn btn-sm" :class="activeOrder.orderType === 'delivery' ? 'btn-primary' : 'btn-outline-primary'" @click="setOrderType(activeOrder, 'delivery')">
+                  {% if active_language == 'ar' %}دليفري{% else %}Delivery{% endif %}
+                </button>
+              </div>
+            </div>
+
+            <template x-if="activeOrder.orderType === 'delivery'">
+              <div class="soft-card">
+                <label class="form-label mb-1">{% if active_language == 'ar' %}رقم هاتف العميل{% else %}Customer Phone{% endif %}</label>
+                <div class="input-group input-group-sm mb-2">
+                  <input type="text" class="form-control" x-model="activeOrder.customer.phone" @input.debounce.350ms="lookupCustomerByPhone(activeOrder)">
+                  <button type="button" class="btn btn-outline-secondary" @click="lookupCustomerByPhone(activeOrder)">
+                    {% if active_language == 'ar' %}بحث{% else %}Search{% endif %}
+                  </button>
+                </div>
+                <template x-if="activeOrder.customer.matches.length">
+                  <div class="list-group mb-2" style="max-height:120px; overflow:auto;">
+                    <template x-for="row in activeOrder.customer.matches" :key="row.id">
+                      <button type="button" class="list-group-item list-group-item-action" @click="selectCustomerMatch(activeOrder, row)">
+                        <span x-text="row.name"></span> - <small x-text="row.phone"></small>
+                      </button>
+                    </template>
+                  </div>
+                </template>
+                <label class="form-label mb-1">{% if active_language == 'ar' %}اسم العميل{% else %}Customer Name{% endif %}</label>
+                <input type="text" class="form-control form-control-sm mb-2" x-model="activeOrder.customer.name">
+                <label class="form-label mb-1">{% if active_language == 'ar' %}عنوان العميل{% else %}Customer Address{% endif %}</label>
+                <textarea class="form-control form-control-sm" rows="2" x-model="activeOrder.customer.address"></textarea>
+              </div>
+            </template>
+
+            <template x-for="method in paymentMethods" :key="method.id">
+              <button
+                class="btn btn-outline-primary"
+                :class="{'btn-primary': activeOrder.paymentMethod === method.id}"
+                type="button"
+                @click="selectPayment(method.id)"
+                x-text="method.label[language === 'ar' ? 'ar' : 'en']"
+              ></button>
+            </template>
+            <button class="btn btn-outline-secondary btn-sm" type="button" @click="activeOrder.checkoutReady = false">
+              {% if active_language == 'ar' %}رجوع للتعديل{% else %}Back to Cart{% endif %}
+            </button>
+        </div>
+        <p class="text-muted" x-show="!activeOrder || !activeOrder.cart.length">{% if active_language == 'ar' %}أضف عناصر أولاً{% else %}Add items first{% endif %}</p>
+
+        <div x-show="activeOrder && activeOrder.status === 'completed'">
+          <hr>
+          <p class="text-muted mb-2">{% if active_language == 'ar' %}طباعة الإيصالات{% else %}Printing{% endif %}</p>
+          <div class="d-flex flex-column gap-2">
+            <button class="btn btn-outline-success" type="button" @click="printReceipt(activeOrder, 'customer')" :disabled="activeOrder.receipts.customer">
+              {% if active_language == 'ar' %}طباعة إيصال للعميل{% else %}Print Customer Receipt{% endif %}
+            </button>
+            <button class="btn btn-outline-warning" type="button" @click="printReceipt(activeOrder, 'kitchen')" :disabled="activeOrder.receipts.kitchen">
+              {% if active_language == 'ar' %}طباعة إيصال للمطبخ{% else %}Print Kitchen Receipt{% endif %}
+            </button>
+            <button x-show="activeOrder && activeOrder.orderType === 'delivery'" class="btn btn-outline-info" type="button" @click="printReceipt(activeOrder, 'delivery')" :disabled="activeOrder.receipts.delivery">
+              {% if active_language == 'ar' %}طباعة نسخة الدليفري{% else %}Print Delivery Copy{% endif %}
+            </button>
+          </div>
+          <button class="btn btn-sm btn-outline-secondary mt-3" type="button" @click="createNewOrder()">
+            {% if active_language == 'ar' %}طلب جديد{% else %}New Order{% endif %}
+          </button>
+        </div>
+        <div x-show="activeOrder && activeOrder.status === 'pending_sync'" class="mt-3">
+          <div class="alert alert-warning mb-2">
+            {% if active_language == 'ar' %}
+            تم حفظ الطلب محلياً وسيتم مزامنته عند عودة الاتصال، الطباعة متاحة بعد المزامنة.
+            {% else %}
+            Order saved locally and will sync when online. Printing is available after sync.
+            {% endif %}
+          </div>
+          <button class="btn btn-sm btn-outline-secondary" type="button" @click="createNewOrder()">
+            {% if active_language == 'ar' %}طلب جديد{% else %}New Order{% endif %}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/pos.js' %}?v=20260302-7"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (!window.Alpine) {
+      const msg = "{% if active_language == 'ar' %}تعذر تحميل محرك التفاعل. حدث الصفحة (Ctrl + F5).{% else %}Interactive engine failed to load. Refresh the page (Ctrl + F5).{% endif %}";
+      const node = document.createElement("div");
+      node.className = "alert alert-danger mt-3";
+      node.textContent = msg;
+      const host = document.querySelector(".workspace-content");
+      if (host) {
+        host.prepend(node);
+      }
+    }
+  });
+</script>
+{% endblock %}

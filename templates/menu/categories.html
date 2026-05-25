@@ -1,0 +1,58 @@
+{% extends "app/base_app.html" %}
+{% block title %}{% if active_language == 'ar' %}تصنيفات المنيو{% else %}Menu Categories{% endif %}{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}تصنيفات المنيو{% else %}Menu Categories{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}تنظيم المنتجات داخل أقسام واضحة{% else %}Organize products into clear sections{% endif %}{% endblock %}
+{% block content %}
+<div class="panel p-3 mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+  <h5 class="mb-0">{% if active_language == 'ar' %}قائمة التصنيفات{% else %}Categories List{% endif %}</h5>
+  {% if can_write %}
+  <a class="btn btn-primary" href="{% url 'menu:category-create' %}">
+    {% if active_language == 'ar' %}إضافة تصنيف{% else %}Add Category{% endif %}
+  </a>
+  {% endif %}
+</div>
+
+<div class="panel p-3">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>{% if active_language == 'ar' %}الاسم{% else %}Name{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الفرع{% else %}Branch{% endif %}</th>
+          <th>{% if active_language == 'ar' %}ترتيب العرض{% else %}Display Order{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+          {% if can_write %}
+          <th>{% if active_language == 'ar' %}إجراءات{% else %}Actions{% endif %}</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+      {% for row in categories %}
+        <tr>
+          <td class="fw-semibold">{{ row.name }}</td>
+          <td>{{ row.branch|default:"-" }}</td>
+          <td>{{ row.display_order }}</td>
+          <td>
+            {% if row.is_active %}<span class="status-pill status-green">{% if active_language == 'ar' %}نشط{% else %}Active{% endif %}</span>
+            {% else %}<span class="status-pill status-gray">{% if active_language == 'ar' %}غير نشط{% else %}Inactive{% endif %}</span>{% endif %}
+          </td>
+          {% if can_write %}
+          <td>
+            <a class="btn btn-sm btn-outline-primary" href="{% url 'menu:category-edit' row.id %}">
+              {% if active_language == 'ar' %}تعديل{% else %}Edit{% endif %}
+            </a>
+          </td>
+          {% endif %}
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="{% if can_write %}5{% else %}4{% endif %}" class="text-center text-muted py-4">
+            {% if active_language == 'ar' %}لا توجد تصنيفات{% else %}No categories{% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

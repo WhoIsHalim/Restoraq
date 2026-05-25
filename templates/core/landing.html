@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% load static ui_extras sanitize %}
+
+{% block title %}Restoraq SaaS{% endblock %}
+
+{% block content %}
+<section class="hero-carousel-wrap mb-4">
+  <div id="homeHeroCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel" data-bs-interval="5500">
+    <div class="carousel-indicators">
+      {% for slide in slides %}
+      <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}" {% if forloop.first %}aria-current="true"{% endif %} aria-label="Slide {{ forloop.counter }}"></button>
+      {% endfor %}
+    </div>
+
+    <div class="carousel-inner">
+      {% for slide in slides %}
+      <div class="carousel-item {% if forloop.first %}active{% endif %}">
+        <article class="hero-slide">
+          <div class="row g-4 align-items-center">
+            <div class="col-lg-7">
+              {% if forloop.first %}
+              <span class="hero-slide-kicker">{{ page_content.kicker }}</span>
+              {% endif %}
+              <h1 class="hero-slide-title mt-3">{{ slide.title }}</h1>
+              {% if slide.subtitle %}
+              <p class="hero-slide-subtitle">{{ slide.subtitle }}</p>
+              {% endif %}
+              <div class="d-flex flex-wrap gap-2 mt-3">
+                {% if slide.cta_text %}
+                <a href="{{ slide.cta_url|default:'#' }}" class="btn btn-primary btn-lg">{{ slide.cta_text }}</a>
+                {% endif %}
+                <a href="{% url 'core:features' %}" class="btn btn-outline-primary btn-lg">{{ page_content.secondary_cta }}</a>
+              </div>
+            </div>
+            <div class="col-lg-5">
+              <div class="hero-slide-media">
+                {% if slide.image %}
+                <img src="{{ slide.image }}" alt="hero">
+                {% else %}
+                <img src="{% static 'img/undraw_posting_photo.svg' %}" alt="hero">
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+      {% endfor %}
+    </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+</section>
+
+<section class="panel p-4 mb-4">
+  <div class="row g-4 align-items-center">
+    <div class="col-lg-6">
+      <h3 class="mb-2">{{ page_content.problem_title }}</h3>
+      <p class="text-muted mb-0">{{ page_content.problem_text|sanitize_html }}</p>
+    </div>
+    <div class="col-lg-6">
+      <h4 class="mb-2">{{ page_content.solution_text_short }}</h4>
+      <div class="soft-card">
+        <p class="text-muted mb-3">{{ page_content.solution_text|sanitize_html }}</p>
+        <ul class="hero-bullet-list">
+          {% for line in page_content.highlights %}
+          <li>{{ line }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="panel p-4 mb-4">
+  <div class="row g-3 align-items-center">
+    <div class="col-lg-6">
+      <h3 class="mb-2">{% if active_language == 'ar' %}لماذا تختار Restoraq؟{% else %}Why Restoraq?{% endif %}</h3>
+      <p class="text-muted mb-0">{% if active_language == 'ar' %}نظام تشغيل موثوق للمطاعم يتوسع مع نمو أعمالك.{% else %}A trusted restaurant operating system that scales with you.{% endif %}</p>
+    </div>
+    <div class="col-lg-6">
+      <div class="row g-2">
+        {% for point in page_content.trust_points %}
+        <div class="col-md-6">
+          <div class="soft-card h-100">
+            <i class="fa-solid fa-circle-check text-success me-2"></i>
+            <span>{{ point }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mb-4">
+  <h3 class="mb-3">{% if active_language == 'ar' %}الباقات المتاحة{% else %}Available Plans{% endif %}</h3>
+  <div class="row g-3">
+    {% for plan in plans %}
+    <div class="col-md-6 col-xl-3">
+      <div class="dash-card pricing-card h-100">
+        <span class="pricing-badge">{{ plan.code|upper }}</span>
+        <h5 class="mb-2">{{ plan|localized_plan_name:active_language }}</h5>
+        <h4 class="mb-2">{{ plan.price_egp }} EGP</h4>
+        <a href="{% url 'core:pricing' %}" class="btn btn-outline-primary btn-sm">{% if active_language == 'ar' %}تفاصيل الباقة{% else %}Plan Details{% endif %}</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="panel p-4 mb-4">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <h3 class="mb-0">{% if active_language == 'ar' %}لقطات من النظام{% else %}Product Highlights{% endif %}</h3>
+    <a href="{% url 'accounts:login' %}" class="btn btn-outline-primary btn-sm">{% if active_language == 'ar' %}اطلب تجربة{% else %}Request Demo{% endif %}</a>
+  </div>
+  <div class="row g-3">
+    {% for screen in page_content.screens %}
+    <div class="col-md-4">
+      <div class="feature-card h-100">
+        <div class="hero-slide-media mb-3">
+          <img src="{% static 'img/' %}{{ screen.image }}" alt="{{ screen.title }}">
+        </div>
+        <h5>{{ screen.title }}</h5>
+        <p class="text-muted mb-0">{{ screen.text }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="panel p-4 mb-4">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <h3 class="mb-0">{% if active_language == 'ar' %}آراء العملاء{% else %}Customer Stories{% endif %}</h3>
+    <span class="badge text-bg-primary">{% if active_language == 'ar' %}ثقة العملاء{% else %}Trusted by Operators{% endif %}</span>
+  </div>
+  <div class="row g-3">
+    {% for row in page_content.testimonials %}
+    <div class="col-md-4">
+      <div class="testimonial-card h-100">
+        <p class="mb-3">“{{ row.text }}”</p>
+        <div class="d-flex align-items-center gap-2">
+          <img src="{% static 'img/undraw_profile.svg' %}" alt="profile" class="testimonial-avatar">
+          <div>
+            <div class="fw-semibold">{{ row.name }}</div>
+            <small class="text-muted">{{ row.role }}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="cta-panel">
+  <h3>{{ page_content.final_title }}</h3>
+  <p class="mb-3">{{ page_content.final_text|sanitize_html }}</p>
+  <a href="{% url 'accounts:login' %}" class="btn btn-light btn-lg">{{ page_content.final_cta }}</a>
+</section>
+{% endblock %}

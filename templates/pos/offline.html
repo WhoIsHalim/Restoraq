@@ -1,0 +1,10 @@
+{% extends "app/base_app.html" %}
+{% block title %}{% if active_language == 'ar' %}بدون اتصال{% else %}Offline{% endif %}{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}وضع عدم الاتصال{% else %}Offline Mode{% endif %}{% endblock %}
+{% block content %}
+<div class="text-center py-5">
+  <h3>{% if active_language == 'ar' %}أنت حالياً بدون اتصال{% else %}You are offline{% endif %}</h3>
+  <p>{% if active_language == 'ar' %}الكاش المحلي للكاشير يعمل. سيتم مزامنة الطلبات المعلقة عند عودة الاتصال.{% else %}Cashier local cache is active. Pending orders will sync when connection returns.{% endif %}</p>
+  <a class="btn btn-primary" href="/pos/">{% if active_language == 'ar' %}العودة إلى الكاشير{% else %}Back to Cashier{% endif %}</a>
+</div>
+{% endblock %}

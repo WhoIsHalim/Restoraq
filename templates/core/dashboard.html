@@ -1,0 +1,88 @@
+﻿{% extends "app/base_app.html" %}
+
+{% block title %}{% if active_language == 'ar' %}لوحة التشغيل{% else %}Operations Dashboard{% endif %}{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}لوحة تشغيل المطعم{% else %}Restaurant Operations Dashboard{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}مؤشرات تشغيل لحظية مع رسوم بيانية متقدمة{% else %}Real-time operating KPIs with advanced charts{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-3">
+  <div class="col-md-6 col-xl-3"><div class="dash-card h-100"><h6 class="text-muted">{% if active_language == 'ar' %}مبيعات الشهر{% else %}Monthly Sales{% endif %}</h6><h3>{{ summary_monthly.sales }}</h3></div></div>
+  <div class="col-md-6 col-xl-3"><div class="dash-card h-100"><h6 class="text-muted">{% if active_language == 'ar' %}مصروفات الشهر{% else %}Monthly Expenses{% endif %}</h6><h3>{{ summary_monthly.expenses }}</h3></div></div>
+  <div class="col-md-6 col-xl-3"><div class="dash-card h-100"><h6 class="text-muted">{% if active_language == 'ar' %}صافي ربح الشهر{% else %}Monthly Net Profit{% endif %}</h6><h3>{{ summary_monthly.net_profit }}</h3></div></div>
+  <div class="col-md-6 col-xl-3"><div class="dash-card h-100"><h6 class="text-muted">{% if active_language == 'ar' %}طلبات المطبخ النشطة{% else %}Active Kitchen Orders{% endif %}</h6><h3>{{ active_orders_count }}</h3></div></div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-lg-8">
+    <div class="panel p-3 h-100">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">{% if active_language == 'ar' %}اتجاه المبيعات مقابل المصروفات (30 يوم){% else %}Sales vs Expenses Trend (30 days){% endif %}</h5>
+        <a class="btn btn-sm btn-outline-primary" href="{% url 'reports:dashboard' %}">{% if active_language == 'ar' %}فتح التقارير{% else %}Open Reports{% endif %}</a>
+      </div>
+      <div style="height:300px"><canvas id="opsTrendChart"></canvas></div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="panel p-3 h-100">
+      <h5 class="mb-3">{% if active_language == 'ar' %}توزيع الأداء حسب الفروع{% else %}Branch Performance Mix{% endif %}</h5>
+      <div style="height:300px"><canvas id="branchMixChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-6"><div class="panel p-3"><h6 class="text-muted">{% if active_language == 'ar' %}أفضل صنف{% else %}Best Seller{% endif %}</h6><h4 class="mb-0">{% if best %}{{ best.0 }}{% else %}-{% endif %}</h4></div></div>
+  <div class="col-md-6"><div class="panel p-3"><h6 class="text-muted">{% if active_language == 'ar' %}أقل صنف مبيعاً{% else %}Least Seller{% endif %}</h6><h4 class="mb-0">{% if least %}{{ least.0 }}{% else %}-{% endif %}</h4></div></div>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-6 col-xl-3"><a class="card-link" href="{% url 'pos:terminal' %}"><div class="dash-card h-100"><h5>{% if active_language == 'ar' %}الكاشير{% else %}Cashier{% endif %}</h5><p class="mb-0">{% if active_language == 'ar' %}نقطة بيع سريعة للأجهزة اللوحية{% else %}Tablet-first cashier terminal{% endif %}</p></div></a></div>
+  <div class="col-md-6 col-xl-3"><a class="card-link" href="{% url 'orders:list' %}"><div class="dash-card h-100"><h5>{% if active_language == 'ar' %}سجل الطلبات{% else %}Order Log{% endif %}</h5><p class="mb-0">{% if active_language == 'ar' %}متابعة كل الطلبات والمدفوعات{% else %}Track all orders and payments{% endif %}</p></div></a></div>
+  {% if kds_enabled %}
+  <div class="col-md-6 col-xl-3"><a class="card-link" href="{% url 'orders:kitchen-board' %}"><div class="dash-card h-100"><h5>{% if active_language == 'ar' %}شاشة المطبخ{% else %}Kitchen Screen{% endif %}</h5><p class="mb-0">{% if active_language == 'ar' %}عرض الطلبات الجاري تحضيرها{% else %}View pending/in-progress kitchen orders{% endif %}</p></div></a></div>
+  {% endif %}
+  <div class="col-md-6 col-xl-3"><a class="card-link" href="{% url 'menu:products' %}"><div class="dash-card h-100"><h5>{% if active_language == 'ar' %}المنيو{% else %}Menu{% endif %}</h5><p class="mb-0">{% if active_language == 'ar' %}إدارة الأصناف والمكونات والصور{% else %}Manage products, ingredients, and images{% endif %}</p></div></a></div>
+  <div class="col-md-6 col-xl-3"><a class="card-link" href="{% url 'crm:customers' %}"><div class="dash-card h-100"><h5>{% if active_language == 'ar' %}العملاء{% else %}Customers{% endif %}</h5><p class="mb-0">{% if active_language == 'ar' %}إدارة بيانات العملاء وسجل طلباتهم{% else %}Manage customer profiles and order history{% endif %}</p></div></a></div>
+  <div class="col-md-6 col-xl-3"><a class="card-link" href="{% url 'core:operations-resources' %}"><div class="dash-card h-100"><h5>{% if active_language == 'ar' %}موارد التشغيل{% else %}Operations Resources{% endif %}</h5><p class="mb-0">{% if active_language == 'ar' %}المخزون الحالي وموارد التشغيل والموارد البشرية{% else %}Current stock, operations resources, and HR{% endif %}</p></div></a></div>
+  <div class="col-md-6 col-xl-3"><a class="card-link" href="{% url 'reports:dashboard' %}"><div class="dash-card h-100"><h5>{% if active_language == 'ar' %}التقارير{% else %}Reports{% endif %}</h5><p class="mb-0">{% if active_language == 'ar' %}تحليل المبيعات ومؤشرات الأداء{% else %}Sales and performance analytics{% endif %}</p></div></a></div>
+  {% if accounting_enabled %}
+  <div class="col-md-6 col-xl-3"><a class="card-link" href="{% url 'reports:accounting' %}"><div class="dash-card h-100"><h5>{% if active_language == 'ar' %}الحسابات{% else %}Accounting{% endif %}</h5><p class="mb-0">{% if active_language == 'ar' %}الداخل والصادر وصافي الربح لكل الفروع{% else %}Inflow/outflow and branch net profit{% endif %}</p></div></a></div>
+  {% endif %}
+</div>
+
+<script id="branch-breakdown-data" type="application/json">{{ branch_breakdown_json|default:"[]" }}</script>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  fetch("{% url 'reports:advanced' %}?period=monthly")
+    .then((r) => r.json())
+    .then((data) => {
+      const ctx = document.getElementById("opsTrendChart");
+      new Chart(ctx, {
+        type: "bar",
+        data,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: "bottom" } },
+          scales: { y: { beginAtZero: true } },
+        },
+      });
+    });
+
+  const branchDataRaw = document.getElementById("branch-breakdown-data")?.textContent || "[]";
+  const branchRows = JSON.parse(branchDataRaw);
+  const labels = branchRows.map((x) => x.name);
+  const values = branchRows.map((x) => Number(x.sales || 0) - Number(x.expenses || 0));
+  const branchCtx = document.getElementById("branchMixChart");
+  new Chart(branchCtx, {
+    type: "doughnut",
+    data: {
+      labels,
+      datasets: [{ data: values, backgroundColor: ["#335ccf", "#2ea87f", "#f18f01", "#dc4e4e", "#6f42c1"] }],
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom" } } },
+  });
+</script>
+{% endblock %}

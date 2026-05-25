@@ -1,0 +1,23 @@
+{% extends "app/base_app.html" %}
+{% block title %}{% if object %}{% if active_language == 'ar' %}تعديل منطقة{% else %}Edit Area{% endif %}{% else %}{% if active_language == 'ar' %}إضافة منطقة{% else %}Add Area{% endif %}{% endif %}{% endblock %}
+{% block app_title %}{% if object %}{% if active_language == 'ar' %}تعديل منطقة جلوس{% else %}Edit Floor Area{% endif %}{% else %}{% if active_language == 'ar' %}منطقة جلوس جديدة{% else %}New Floor Area{% endif %}{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}استخدم المناطق لتنظيم الطاولات والحجوزات{% else %}Use areas to organize tables and reservations{% endif %}{% endblock %}
+
+{% block content %}
+<div class="panel p-4">
+  <form method="post" class="row g-3">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="col-md-6"><label class="form-label" for="{{ form.branch.id_for_label }}">{{ form.branch.label }}</label>{{ form.branch }}</div>
+    <div class="col-md-6"><label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>{{ form.name }}</div>
+    <div class="col-12"><label class="form-label" for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>{{ form.description }}</div>
+    <div class="col-12">
+      <div class="form-check">{{ form.is_active }}<label class="form-check-label" for="{{ form.is_active.id_for_label }}">{{ form.is_active.label }}</label></div>
+    </div>
+    <div class="col-12 d-flex gap-2">
+      <button class="btn btn-primary" type="submit">{% if active_language == 'ar' %}حفظ{% else %}Save{% endif %}</button>
+      <a class="btn btn-outline-secondary" href="{% url 'restaurants:floor-areas' %}">{% if active_language == 'ar' %}إلغاء{% else %}Cancel{% endif %}</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

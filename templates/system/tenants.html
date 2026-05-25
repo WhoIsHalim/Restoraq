@@ -1,0 +1,60 @@
+{% extends "system/base_system.html" %}
+{% load ui_extras %}
+
+{% block title %}{% if active_language == 'ar' %}المطاعم{% else %}Tenants{% endif %}{% endblock %}
+{% block system_title %}{% if active_language == 'ar' %}إدارة المطاعم{% else %}Tenant Management{% endif %}{% endblock %}
+{% block system_subtitle %}
+{% if active_language == 'ar' %}
+إدارة كل مطعم داخل المنصة مع الدومين والاشتراك وحالة التشغيل.
+{% else %}
+Manage each restaurant tenant with domain, subscription, and activation status.
+{% endif %}
+{% endblock %}
+{% block system_top_actions %}
+<a class="btn btn-primary" href="{% url 'system:tenant-create' %}">+ {% if active_language == 'ar' %}إضافة مطعم{% else %}Add Restaurant{% endif %}</a>
+{% endblock %}
+
+{% block system_content %}
+<div class="panel p-3">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>{% if active_language == 'ar' %}الاسم{% else %}Name{% endif %}</th>
+          <th>Slug</th>
+          <th>{% if active_language == 'ar' %}الباقة{% else %}Plan{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الدومين الرئيسي{% else %}Primary Domain{% endif %}</th>
+          <th>{% if active_language == 'ar' %}نشط{% else %}Active{% endif %}</th>
+          <th>{% if active_language == 'ar' %}تاريخ الإنشاء{% else %}Created{% endif %}</th>
+          <th>{% if active_language == 'ar' %}التفاصيل{% else %}Details{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tenant in tenants %}
+        <tr>
+          <td class="fw-semibold">{{ tenant.name }}</td>
+          <td><code>{{ tenant.slug }}</code></td>
+          <td>
+            {% if tenant.subscription %}
+            {{ tenant.subscription.plan|localized_plan_name:active_language }}
+            {% else %}
+            -
+            {% endif %}
+          </td>
+          <td>
+            {% with tenant.domains.first as primary_domain %}
+              {% if primary_domain %}{{ primary_domain.domain }}{% else %}-{% endif %}
+            {% endwith %}
+          </td>
+          <td><span class="status-pill {% if tenant.is_active %}status-green{% else %}status-gray{% endif %}">{{ tenant.is_active|localized_bool:active_language }}</span></td>
+          <td>{{ tenant.created_at|date:"Y-m-d" }}</td>
+          <td><a class="btn btn-sm btn-outline-primary" href="{% url 'system:tenant-detail' tenant.slug %}">{% if active_language == 'ar' %}عرض{% else %}View{% endif %}</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center text-muted py-4">{% if active_language == 'ar' %}لا يوجد مطاعم حالياً{% else %}No tenants yet{% endif %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

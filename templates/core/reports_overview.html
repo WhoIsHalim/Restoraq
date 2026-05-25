@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if active_language == 'ar' %}التقارير{% else %}Reports{% endif %}{% endblock %}
+
+{% block content %}
+<section class="panel p-4 mb-4">
+  <div class="row align-items-center g-4">
+    <div class="col-lg-7">
+      <span class="hero-slide-kicker">{% if active_language == 'ar' %}تحليلات ذكية{% else %}Smart Analytics{% endif %}</span>
+      <h1 class="hero-slide-title mt-2">{% if active_language == 'ar' %}تقارير تفصيلية لاتخاذ قرارات دقيقة{% else %}Insightful reports for better decisions{% endif %}</h1>
+      <p class="hero-slide-subtitle">
+        {% if active_language == 'ar' %}
+        تقارير يومية وشهرية وربعية، مع مقارنة الفروع وتوقعات الربح.
+        {% else %}
+        Daily, monthly, and quarterly reports with branch comparison and profit insights.
+        {% endif %}
+      </p>
+      <div class="d-flex gap-2 mt-3 flex-wrap">
+        <a class="btn btn-primary" href="{% url 'core:request-demo' %}">{% if active_language == 'ar' %}اطلب ديمو{% else %}Request Demo{% endif %}</a>
+        <a class="btn btn-outline-primary" href="{% url 'core:pricing' %}">{% if active_language == 'ar' %}عرض الباقات{% else %}View Pricing{% endif %}</a>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="hero-slide-media">
+        <img src="{% static 'img/undraw_profile_1.svg' %}" alt="reports">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mb-4">
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="feature-card h-100">
+        <div class="feature-icon">01</div>
+        <h5>{% if active_language == 'ar' %}مبيعات وأرباح{% else %}Sales & Profit{% endif %}</h5>
+        <p class="mb-0">{% if active_language == 'ar' %}تقارير دقيقة للمبيعات والمصروفات وصافي الربح.{% else %}Accurate sales, expenses, and net profit views.{% endif %}</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card h-100">
+        <div class="feature-icon">02</div>
+        <h5>{% if active_language == 'ar' %}أفضل الأصناف{% else %}Top Products{% endif %}</h5>
+        <p class="mb-0">{% if active_language == 'ar' %}تعرف على أفضل وأضعف المنتجات أداءً.{% else %}Discover best and least performing items.{% endif %}</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card h-100">
+        <div class="feature-icon">03</div>
+        <h5>{% if active_language == 'ar' %}مقارنة الفروع{% else %}Branch Comparison{% endif %}</h5>
+        <p class="mb-0">{% if active_language == 'ar' %}لوحة مقارنة الفروع لفهم الأداء بين المواقع.{% else %}Compare branch performance side by side.{% endif %}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-panel">
+  <h3>{% if active_language == 'ar' %}هل تريد رؤية التقارير عملياً؟{% else %}Want to see reports live?{% endif %}</h3>
+  <p class="mb-3">{% if active_language == 'ar' %}اطلب عرضاً مباشراً مع فريقنا.{% else %}Book a live walkthrough with our team.{% endif %}</p>
+  <a href="{% url 'core:request-demo' %}" class="btn btn-light btn-lg">{% if active_language == 'ar' %}احجز الديمو{% else %}Book Demo{% endif %}</a>
+</section>
+{% endblock %}

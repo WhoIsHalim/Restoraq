@@ -1,0 +1,70 @@
+{% extends "app/base_app.html" %}
+
+{% block title %}{% if active_language == 'ar' %}موارد التشغيل{% else %}Operations Resources{% endif %}{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}موارد التشغيل{% else %}Operations Resources{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}المخزون الحالي وموارد التشغيل والموارد البشرية{% else %}Current stock, operations resources, and HR{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-3">
+  <div class="col-md-4">
+    <a class="card-link" href="{% url 'inventory:ingredients' %}">
+      <div class="dash-card h-100">
+        <h5>{% if active_language == 'ar' %}المخزون الحالي{% else %}Current Stock{% endif %}</h5>
+        <p class="mb-1 text-muted">{% if active_language == 'ar' %}عدد الأصناف{% else %}Ingredients{% endif %}</p>
+        <h3>{{ ingredients_count }}</h3>
+        <p class="mb-0 text-muted">{% if active_language == 'ar' %}تنبيهات نقص المخزون{% else %}Low stock alerts{% endif %}: {{ low_stock_count }}</p>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a class="card-link" href="{% url 'inventory:stock-entries' %}">
+      <div class="dash-card h-100">
+        <h5>{% if active_language == 'ar' %}موارد التشغيل{% else %}Operational Resources{% endif %}</h5>
+        <p class="mb-1 text-muted">{% if active_language == 'ar' %}حركات المخزون المسجلة{% else %}Recorded stock movements{% endif %}</p>
+        <h3>{{ stock_entries_count }}</h3>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a class="card-link" href="{% url 'hr:employees' %}">
+      <div class="dash-card h-100">
+        <h5>{% if active_language == 'ar' %}الموارد البشرية{% else %}Human Resources{% endif %}</h5>
+        <p class="mb-1 text-muted">{% if active_language == 'ar' %}عدد الموظفين{% else %}Employees{% endif %}</p>
+        <h3>{{ employees_count }}</h3>
+      </div>
+    </a>
+  </div>
+</div>
+
+<div class="panel p-3">
+  <h5 class="mb-3">{% if active_language == 'ar' %}آخر حركات المخزون{% else %}Latest Stock Entries{% endif %}</h5>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>{% if active_language == 'ar' %}الصنف{% else %}Ingredient{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الفرع{% else %}Branch{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الحركة{% else %}Movement{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الكمية{% else %}Quantity{% endif %}</th>
+          <th>{% if active_language == 'ar' %}الوقت{% else %}Time{% endif %}</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for row in recent_entries %}
+        <tr>
+          <td>{{ row.ingredient.name }}</td>
+          <td>{{ row.branch|default:"-" }}</td>
+          <td><code>{{ row.movement_type }}</code></td>
+          <td>{{ row.quantity }}</td>
+          <td>{{ row.created_at|date:"Y-m-d H:i" }}</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="5" class="text-center text-muted py-4">{% if active_language == 'ar' %}لا توجد حركات مخزون بعد{% else %}No stock entries yet{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

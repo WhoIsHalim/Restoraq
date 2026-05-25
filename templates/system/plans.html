@@ -1,0 +1,31 @@
+{% extends "system/base_system.html" %}
+{% load ui_extras %}
+
+{% block title %}{% if active_language == 'ar' %}الباقات{% else %}Plans{% endif %}{% endblock %}
+{% block system_title %}{% if active_language == 'ar' %}باقات الاشتراك{% else %}Subscription Plans{% endif %}{% endblock %}
+{% block system_subtitle %}
+{% if active_language == 'ar' %}
+إدارة الباقات القياسية المعتمدة داخل النظام.
+{% else %}
+Review and manage standard subscription plans.
+{% endif %}
+{% endblock %}
+
+{% block system_content %}
+<div class="row g-3">
+  {% for plan in plans %}
+  <div class="col-md-6 col-xl-3">
+    <div class="dash-card pricing-card h-100">
+      <span class="pricing-badge">{{ plan.code|upper }}</span>
+      <h5 class="mb-2">{{ plan|localized_plan_name:active_language }}</h5>
+      <h4 class="mb-2">{{ plan.price_egp }} EGP</h4>
+      <p class="mb-0 text-muted">{{ plan.description|default:"-" }}</p>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div class="panel p-4 text-center text-muted">{% if active_language == 'ar' %}لا يوجد باقات{% else %}No plans found{% endif %}</div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

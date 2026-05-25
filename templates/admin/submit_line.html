@@ -1,0 +1,32 @@
+{% load i18n admin_urls %}
+<div class="submit-row">
+{% block submit-row %}
+{% if show_save %}
+  <button type="submit" class="btn btn-primary" name="_save">
+    {% if LANGUAGE_CODE|slice:':2' == 'ar' %}حفظ{% else %}{% translate 'Save' %}{% endif %}
+  </button>
+{% endif %}
+{% if show_save_as_new %}
+  <button type="submit" class="btn btn-outline-primary" name="_saveasnew">
+    {% if LANGUAGE_CODE|slice:':2' == 'ar' %}حفظ كجديد{% else %}{% translate 'Save as new' %}{% endif %}
+  </button>
+{% endif %}
+{% if show_save_and_add_another %}
+  <button type="submit" class="btn btn-outline-secondary" name="_addanother">
+    {% if LANGUAGE_CODE|slice:':2' == 'ar' %}حفظ وإضافة آخر{% else %}{% translate 'Save and add another' %}{% endif %}
+  </button>
+{% endif %}
+{% if show_save_and_continue %}
+  <button type="submit" class="btn btn-outline-secondary" name="_continue">
+    {% if can_change %}
+      {% if LANGUAGE_CODE|slice:':2' == 'ar' %}حفظ والاستمرار{% else %}{% translate 'Save and continue editing' %}{% endif %}
+    {% else %}
+      {% if LANGUAGE_CODE|slice:':2' == 'ar' %}حفظ وعرض{% else %}{% translate 'Save and view' %}{% endif %}
+    {% endif %}
+  </button>
+{% endif %}
+{% if show_close %}
+  <a href="{% url opts|admin_urlname:'changelist' %}" class="btn btn-light">{% if LANGUAGE_CODE|slice:':2' == 'ar' %}إغلاق{% else %}{% translate 'Close' %}{% endif %}</a>
+{% endif %}
+{% endblock %}
+</div>

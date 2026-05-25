@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}{% if active_language == 'ar' %}الدعم{% else %}Support{% endif %}{% endblock %}
+
+{% block content %}
+<section class="panel p-4 mb-4">
+  <div class="row g-4 align-items-center">
+    <div class="col-lg-8">
+      <h1 class="hero-slide-title">{% if active_language == 'ar' %}دعم سريع ومباشر للمطاعم{% else %}Fast, reliable support{% endif %}</h1>
+      <p class="hero-slide-subtitle">
+        {% if active_language == 'ar' %}
+        فريقنا مستعد لمساعدتك على مدار الوقت مع حلول واضحة وتذاكر متابعة.
+        {% else %}
+        Our team supports your operations with clear solutions and tracked tickets.
+        {% endif %}
+      </p>
+    </div>
+    <div class="col-lg-4 text-lg-end">
+      <a class="btn btn-primary" href="{% url 'core:contact' %}">{% if active_language == 'ar' %}تواصل معنا{% else %}Contact Us{% endif %}</a>
+    </div>
+  </div>
+</section>
+
+<section class="mb-4">
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="feature-card h-100">
+        <div class="feature-icon">01</div>
+        <h5>{% if active_language == 'ar' %}تذاكر منظمة{% else %}Ticketed Support{% endif %}</h5>
+        <p class="mb-0">{% if active_language == 'ar' %}كل طلب دعم يتم تتبعه حتى الإغلاق.{% else %}Every request tracked until closure.{% endif %}</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card h-100">
+        <div class="feature-icon">02</div>
+        <h5>{% if active_language == 'ar' %}دعم تشغيلي{% else %}Operational Help{% endif %}</h5>
+        <p class="mb-0">{% if active_language == 'ar' %}مساعدة في إعداد الفروع والطباعة والتقارير.{% else %}Help with setup, printing, and reports.{% endif %}</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card h-100">
+        <div class="feature-icon">03</div>
+        <h5>{% if active_language == 'ar' %}تواصل سريع{% else %}Fast Response{% endif %}</h5>
+        <p class="mb-0">{% if active_language == 'ar' %}نرجع إليك خلال وقت قصير عبر القنوات المعتمدة.{% else %}We respond quickly through agreed channels.{% endif %}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-panel">
+  <h3>{% if active_language == 'ar' %}هل تحتاج مساعدة الآن؟{% else %}Need help now?{% endif %}</h3>
+  <p class="mb-3">{% if active_language == 'ar' %}ارسل طلبك وسيتم التواصل سريعاً.{% else %}Send your request and we will respond shortly.{% endif %}</p>
+  <a href="{% url 'core:contact' %}" class="btn btn-light btn-lg">{% if active_language == 'ar' %}فتح تذكرة{% else %}Open Ticket{% endif %}</a>
+</section>
+{% endblock %}

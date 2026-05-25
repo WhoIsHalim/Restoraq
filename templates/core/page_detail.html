@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load sanitize %}
+{% block title %}{{ page.title }}{% endblock %}
+{% block content %}
+<article class="panel p-4">
+  <h2 class="mb-3">{{ page.title }}</h2>
+  <div class="cms-body">{{ page.body|sanitize_html }}</div>
+</article>
+{% endblock %}

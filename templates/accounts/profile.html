@@ -1,0 +1,42 @@
+{% extends "app/base_app.html" %}
+{% block title %}{% if active_language == 'ar' %}الملف الشخصي{% else %}Profile{% endif %}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="panel p-4">
+      <h4 class="mb-3">{% if active_language == 'ar' %}الملف الشخصي{% else %}Profile{% endif %}</h4>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="small text-muted d-block">{% if active_language == 'ar' %}اسم المستخدم{% else %}Username{% endif %}</label>
+          <div class="fw-semibold">{{ user.username }}</div>
+        </div>
+        <div class="col-md-6">
+          <label class="small text-muted d-block">{% if active_language == 'ar' %}البريد الإلكتروني{% else %}Email{% endif %}</label>
+          <div class="fw-semibold">{{ user.email|default:"-" }}</div>
+        </div>
+        <div class="col-md-6">
+          <label class="small text-muted d-block">{% if active_language == 'ar' %}رقم الهاتف{% else %}Phone{% endif %}</label>
+          <div class="fw-semibold">{{ user.phone|default:"-" }}</div>
+        </div>
+        <div class="col-md-6">
+          <label class="small text-muted d-block">{% if active_language == 'ar' %}اللغة{% else %}Language{% endif %}</label>
+          <div class="fw-semibold">{{ user.preferred_language }}</div>
+        </div>
+        <div class="col-12">
+          <label class="small text-muted d-block">{% if active_language == 'ar' %}المجموعات / الصلاحيات{% else %}Groups / Roles{% endif %}</label>
+          <div class="d-flex flex-wrap gap-2 mt-1">
+            {% for group in user.groups.all %}
+              <span class="badge text-bg-secondary">{{ group.name }}</span>
+            {% empty %}
+              <span class="text-muted">{% if active_language == 'ar' %}لا توجد أدوار{% else %}No roles{% endif %}</span>
+            {% endfor %}
+            {% if user.is_superuser %}
+              <span class="badge text-bg-dark">{% if active_language == 'ar' %}مدير أعلى{% else %}Superuser{% endif %}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

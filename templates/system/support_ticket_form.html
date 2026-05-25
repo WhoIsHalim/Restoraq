@@ -1,0 +1,55 @@
+{% extends "system/base_system.html" %}
+
+{% block title %}{% if active_language == 'ar' %}تذكرة دعم{% else %}Support Ticket{% endif %}{% endblock %}
+{% block system_title %}{% if active_language == 'ar' %}تذكرة دعم{% else %}Support Ticket{% endif %}{% endblock %}
+{% block system_subtitle %}
+{% if active_language == 'ar' %}
+قم بتسجيل تفاصيل المشكلة ومتابعتها حتى الإغلاق.
+{% else %}
+Log the issue details and track it to closure.
+{% endif %}
+{% endblock %}
+
+{% block system_content %}
+<div class="panel p-4">
+  <form method="post">
+    {% csrf_token %}
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label" for="{{ form.tenant.id_for_label }}">{{ form.tenant.label }}</label>
+        {{ form.tenant }}
+        {% for err in form.tenant.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="{{ form.assigned_to.id_for_label }}">{{ form.assigned_to.label }}</label>
+        {{ form.assigned_to }}
+        {% for err in form.assigned_to.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+      </div>
+      <div class="col-12">
+        <label class="form-label" for="{{ form.subject.id_for_label }}">{{ form.subject.label }}</label>
+        {{ form.subject }}
+        {% for err in form.subject.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+      </div>
+      <div class="col-12">
+        <label class="form-label" for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+        {{ form.description }}
+        {% for err in form.description.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="{{ form.status.id_for_label }}">{{ form.status.label }}</label>
+        {{ form.status }}
+        {% for err in form.status.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="{{ form.priority.id_for_label }}">{{ form.priority.label }}</label>
+        {{ form.priority }}
+        {% for err in form.priority.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+      </div>
+    </div>
+    <div class="d-flex gap-2 mt-4">
+      <button class="btn btn-primary" type="submit">{% if active_language == 'ar' %}حفظ{% else %}Save{% endif %}</button>
+      <a class="btn btn-outline-secondary" href="{% url 'system:support-tickets' %}">{% if active_language == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

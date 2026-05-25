@@ -1,0 +1,63 @@
+{% extends "app/base_app.html" %}
+{% block title %}{% if active_language == 'ar' %}تفاصيل العميل{% else %}Customer Details{% endif %}{% endblock %}
+{% block app_title %}{% if active_language == 'ar' %}{{ customer.name }}{% else %}{{ customer.name }}{% endif %}{% endblock %}
+{% block app_subtitle %}{% if active_language == 'ar' %}سجل طلبات العميل وتفاصيل التواصل{% else %}Customer profile and order history{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-3">
+  <div class="col-lg-5">
+    <div class="panel p-3">
+      <div class="mb-2"><strong>{% if active_language == 'ar' %}الهاتف{% else %}Phone{% endif %}:</strong> {{ customer.phone|default:"-" }}</div>
+      <div class="mb-2"><strong>{% if active_language == 'ar' %}البريد{% else %}Email{% endif %}:</strong> {{ customer.email|default:"-" }}</div>
+      <div class="mb-2"><strong>{% if active_language == 'ar' %}الفرع{% else %}Branch{% endif %}:</strong> {{ customer.branch|default:"-" }}</div>
+      <div class="mb-2"><strong>{% if active_language == 'ar' %}نقاط الولاء{% else %}Loyalty Points{% endif %}:</strong> {{ customer.loyalty_points }}</div>
+      <div><strong>{% if active_language == 'ar' %}العنوان / ملاحظات{% else %}Address / Notes{% endif %}:</strong> {{ customer.notes|default:"-" }}</div>
+      <div class="mt-3 d-flex gap-2">
+        {% if can_write %}
+        <a class="btn btn-outline-primary btn-sm" href="{% url 'crm:customer-edit' customer.id %}">{% if active_language == 'ar' %}تعديل{% else %}Edit{% endif %}</a>
+        {% endif %}
+        <a class="btn btn-outline-secondary btn-sm" href="{% url 'crm:customers' %}">{% if active_language == 'ar' %}رجوع{% else %}Back{% endif %}</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="panel p-3">
+      <h5 class="mb-3">{% if active_language == 'ar' %}سجل الطلبات{% else %}Order History{% endif %}</h5>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>{% if active_language == 'ar' %}نوع الطلب{% else %}Order Type{% endif %}</th>
+              <th>{% if active_language == 'ar' %}الإجمالي{% else %}Total{% endif %}</th>
+              <th>{% if active_language == 'ar' %}التاريخ{% else %}Date{% endif %}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for order in orders %}
+            <tr>
+              <td>{{ order.order_number }}</td>
+              <td>
+                {% if order.order_type == 'delivery' %}
+                  {% if active_language == 'ar' %}دليفري{% else %}Delivery{% endif %}
+                {% elif order.order_type == 'takeaway' %}
+                  {% if active_language == 'ar' %}تيكاوي{% else %}Takeaway{% endif %}
+                {% else %}
+                  {% if active_language == 'ar' %}صالة{% else %}Dine In{% endif %}
+                {% endif %}
+              </td>
+              <td>{{ order.total_amount }}</td>
+              <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
+              <td><a class="btn btn-sm btn-outline-primary" href="{% url 'orders:detail' order.id %}">{% if active_language == 'ar' %}فتح{% else %}Open{% endif %}</a></td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-4">{% if active_language == 'ar' %}لا توجد طلبات لهذا العميل{% else %}No orders for this customer{% endif %}</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
